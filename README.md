@@ -1,0 +1,1 @@
+# Structural-Drawings-Analysis-AI-model
