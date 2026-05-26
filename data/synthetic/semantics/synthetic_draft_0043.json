@@ -1,0 +1,31 @@
+{
+  "image_id": "synthetic_draft_0043",
+  "annotations": [
+    {
+      "bbox": [
+        247,
+        755,
+        370,
+        781
+      ],
+      "text": "H10@300",
+      "semantic": {
+        "bar_type": "H10",
+        "spacing": 300
+      }
+    },
+    {
+      "bbox": [
+        631,
+        777,
+        749,
+        803
+      ],
+      "text": "T12@150",
+      "semantic": {
+        "bar_type": "T12",
+        "spacing": 150
+      }
+    }
+  ]
+}

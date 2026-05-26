@@ -1,0 +1,42 @@
+{
+  "image_id": "synthetic_draft_0063",
+  "annotations": [
+    {
+      "bbox": [
+        536,
+        515,
+        600,
+        541
+      ],
+      "text": "2Y16",
+      "semantic": {
+        "raw": "2Y16"
+      }
+    },
+    {
+      "bbox": [
+        493,
+        569,
+        611,
+        595
+      ],
+      "text": "T12@150",
+      "semantic": {
+        "bar_type": "T12",
+        "spacing": 150
+      }
+    },
+    {
+      "bbox": [
+        441,
+        266,
+        505,
+        292
+      ],
+      "text": "2Y16",
+      "semantic": {
+        "raw": "2Y16"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "image_id": "synthetic_draft_0011",
+  "annotations": [
+    {
+      "bbox": [
+        240,
+        569,
+        348,
+        595
+      ],
+      "text": "Y20 TOP",
+      "semantic": {
+        "raw": "Y20 TOP"
+      }
+    }
+  ]
+}

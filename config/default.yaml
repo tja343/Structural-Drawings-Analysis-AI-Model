@@ -1,0 +1,18 @@
+app:
+  debug: true
+  host: "0.0.0.0"
+  port: 8000
+
+models:
+  detection:
+    weights: "models/yolov8_custom.pt"
+    confidence_threshold: 0.5
+  ocr:
+    lang: "en"
+    use_gpu: true
+
+paths:
+  data_raw: "data/raw"
+  data_synthetic: "data/synthetic"
+  data_processed: "data/processed"
+  logs: "logs"

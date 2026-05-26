@@ -1,0 +1,43 @@
+{
+  "image_id": "synthetic_sample_0001",
+  "annotations": [
+    {
+      "bbox": [
+        461,
+        207,
+        581,
+        233
+      ],
+      "text": "R10-200",
+      "semantic": {
+        "raw": "R10-200"
+      }
+    },
+    {
+      "bbox": [
+        393,
+        550,
+        516,
+        576
+      ],
+      "text": "H10@300",
+      "semantic": {
+        "bar_type": "H10",
+        "spacing": 300
+      }
+    },
+    {
+      "bbox": [
+        242,
+        432,
+        360,
+        458
+      ],
+      "text": "T12@150",
+      "semantic": {
+        "bar_type": "T12",
+        "spacing": 150
+      }
+    }
+  ]
+}
