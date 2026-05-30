@@ -1,0 +1,8 @@
+fastapi
+httpx
+pydantic
+pydantic-settings
+pytest
+python-multipart
+pyyaml
+uvicorn
