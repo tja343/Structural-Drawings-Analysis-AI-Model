@@ -1,0 +1,59 @@
+{
+  "image_id": "random_color_sample_0001",
+  "annotations": [
+    {
+      "bbox": [
+        350,
+        60,
+        503,
+        86
+      ],
+      "text": "T32 175 B2",
+      "semantic": {
+        "raw": "T32 175 B2",
+        "bar_type": "T",
+        "diameter": 32,
+        "spacing": 175,
+        "layer": "B",
+        "direction": 2,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        435,
+        645,
+        588,
+        671
+      ],
+      "text": "T20 300 B2",
+      "semantic": {
+        "raw": "T20 300 B2",
+        "bar_type": "T",
+        "diameter": 20,
+        "spacing": 300,
+        "layer": "B",
+        "direction": 2,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        284,
+        150,
+        442,
+        176
+      ],
+      "text": "H10 100 B2",
+      "semantic": {
+        "raw": "H10 100 B2",
+        "bar_type": "H",
+        "diameter": 10,
+        "spacing": 100,
+        "layer": "B",
+        "direction": 2,
+        "color": "magenta"
+      }
+    }
+  ]
+}

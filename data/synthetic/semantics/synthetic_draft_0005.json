@@ -1,0 +1,41 @@
+{
+  "image_id": "synthetic_draft_0005",
+  "annotations": [
+    {
+      "bbox": [
+        617,
+        734,
+        770,
+        760
+      ],
+      "text": "R20 225 T2",
+      "semantic": {
+        "raw": "R20 225 T2",
+        "bar_type": "R",
+        "diameter": 20,
+        "spacing": 225,
+        "layer": "T",
+        "direction": 2,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        484,
+        46,
+        637,
+        72
+      ],
+      "text": "R16 100 T1",
+      "semantic": {
+        "raw": "R16 100 T1",
+        "bar_type": "R",
+        "diameter": 16,
+        "spacing": 100,
+        "layer": "T",
+        "direction": 1,
+        "color": "orange"
+      }
+    }
+  ]
+}

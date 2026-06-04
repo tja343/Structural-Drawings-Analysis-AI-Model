@@ -23,6 +23,10 @@ CLASS_NAMES = {
     4: "Dimension",
     5: "Support",
 }
+PREVIEW_COLORS = {
+    0: "#dc2626",
+    3: "#2563eb",
+}
 
 
 st.set_page_config(
@@ -249,7 +253,7 @@ def draw_yolo_boxes(image: Image.Image, labels: list[dict]) -> Image.Image:
         y1 = yc - box_h / 2
         x2 = xc + box_w / 2
         y2 = yc + box_h / 2
-        color = "#0f766e" if item["class_id"] == 3 else "#b42318"
+        color = PREVIEW_COLORS.get(item["class_id"], "#9ca3af")
         draw.rectangle((x1, y1, x2, y2), outline=color, width=3)
         draw.text((x1 + 4, max(0, y1 - 18)), item["class_name"], fill=color)
     return canvas
@@ -411,7 +415,7 @@ elif section == "Synthetic Dataset":
         left, right = st.columns([1.4, 1])
         with left:
             st.subheader("Rendered Sample")
-            st.caption("Boxes are drawn from the YOLO label file. Beam boxes use teal; text boxes use red.")
+            st.caption("Boxes are drawn from the YOLO label file. The generated bars and reinforcement text use randomized visible colors.")
             st.image(draw_yolo_boxes(base_image, labels), caption=selected.name, use_container_width=True)
         with right:
             st.markdown(f'<span class="path-chip">{selected}</span>', unsafe_allow_html=True)

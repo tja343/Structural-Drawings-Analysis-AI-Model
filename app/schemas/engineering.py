@@ -13,6 +13,7 @@ class ParsedSemanticSchema(BaseModel):
     spacing: Optional[int] = None
     quantity: Optional[int] = None
     layer: Optional[str] = None
+    direction: Optional[int] = None
 
 class AnnotationSchema(BaseModel):
     bbox: BoundingBoxSchema

@@ -1,0 +1,23 @@
+{
+  "image_id": "synthetic_draft_0069",
+  "annotations": [
+    {
+      "bbox": [
+        336,
+        728,
+        490,
+        754
+      ],
+      "text": "H32 300 T2",
+      "semantic": {
+        "raw": "H32 300 T2",
+        "bar_type": "H",
+        "diameter": 32,
+        "spacing": 300,
+        "layer": "T",
+        "direction": 2,
+        "color": "orange"
+      }
+    }
+  ]
+}

@@ -59,7 +59,8 @@ class JSONGeneratorEngine:
                     diameter=parsed_data.get("diameter"),
                     spacing=parsed_data.get("spacing"),
                     quantity=parsed_data.get("quantity"),
-                    layer=parsed_data.get("layer")
+                    layer=parsed_data.get("layer"),
+                    direction=parsed_data.get("direction")
                 )
                 
                 annotation = AnnotationSchema(

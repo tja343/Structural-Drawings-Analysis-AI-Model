@@ -1,0 +1,59 @@
+{
+  "image_id": "synthetic_draft_0006",
+  "annotations": [
+    {
+      "bbox": [
+        387,
+        515,
+        540,
+        541
+      ],
+      "text": "R32 250 T2",
+      "semantic": {
+        "raw": "R32 250 T2",
+        "bar_type": "R",
+        "diameter": 32,
+        "spacing": 250,
+        "layer": "T",
+        "direction": 2,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        113,
+        309,
+        266,
+        335
+      ],
+      "text": "T20 100 B1",
+      "semantic": {
+        "raw": "T20 100 B1",
+        "bar_type": "T",
+        "diameter": 20,
+        "spacing": 100,
+        "layer": "B",
+        "direction": 1,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        343,
+        146,
+        480,
+        172
+      ],
+      "text": "T8 125 B1",
+      "semantic": {
+        "raw": "T8 125 B1",
+        "bar_type": "T",
+        "diameter": 8,
+        "spacing": 125,
+        "layer": "B",
+        "direction": 1,
+        "color": "orange"
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "image_id": "synthetic_draft_0030",
+  "annotations": [
+    {
+      "bbox": [
+        103,
+        182,
+        258,
+        208
+      ],
+      "text": "Y20 175 B2",
+      "semantic": {
+        "raw": "Y20 175 B2",
+        "bar_type": "Y",
+        "diameter": 20,
+        "spacing": 175,
+        "layer": "B",
+        "direction": 2,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        574,
+        642,
+        713,
+        668
+      ],
+      "text": "Y8 200 B1",
+      "semantic": {
+        "raw": "Y8 200 B1",
+        "bar_type": "Y",
+        "diameter": 8,
+        "spacing": 200,
+        "layer": "B",
+        "direction": 1,
+        "color": "red"
+      }
+    }
+  ]
+}

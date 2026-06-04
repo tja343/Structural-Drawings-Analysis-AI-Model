@@ -1,0 +1,23 @@
+{
+  "image_id": "random_color_sample_0003",
+  "annotations": [
+    {
+      "bbox": [
+        617,
+        97,
+        768,
+        123
+      ],
+      "text": "Y32 300 T1",
+      "semantic": {
+        "raw": "Y32 300 T1",
+        "bar_type": "Y",
+        "diameter": 32,
+        "spacing": 300,
+        "layer": "T",
+        "direction": 1,
+        "color": "magenta"
+      }
+    }
+  ]
+}

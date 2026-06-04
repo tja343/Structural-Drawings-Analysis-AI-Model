@@ -28,6 +28,16 @@ def test_layer_format():
     assert res["layer"] == "TOP"
     assert res["parsed"] == True
 
+def test_directional_spacing_format():
+    parser = EngineeringParser()
+    res = parser.parse("H12 200 T1")
+    assert res["bar_type"] == "H"
+    assert res["diameter"] == 12
+    assert res["spacing"] == 200
+    assert res["layer"] == "T"
+    assert res["direction"] == 1
+    assert res["parsed"] == True
+
 def test_ocr_correction():
     parser = EngineeringParser()
     # Testing OCR reading 'a' instead of '@'
@@ -48,5 +58,6 @@ if __name__ == "__main__":
     test_spacing_format()
     test_quantity_format()
     test_layer_format()
+    test_directional_spacing_format()
     test_ocr_correction()
     print("All parser tests passed!")

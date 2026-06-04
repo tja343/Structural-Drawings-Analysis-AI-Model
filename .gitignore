@@ -8,6 +8,10 @@ logs/
 runs/
 mlflow.db
 
+data/yolo/train/
+data/yolo/val/
+data/yolo/test/
+
 yolov8n.pt
 
 .streamlit/

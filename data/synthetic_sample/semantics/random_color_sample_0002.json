@@ -1,0 +1,23 @@
+{
+  "image_id": "random_color_sample_0002",
+  "annotations": [
+    {
+      "bbox": [
+        72,
+        269,
+        225,
+        295
+      ],
+      "text": "T25 125 B1",
+      "semantic": {
+        "raw": "T25 125 B1",
+        "bar_type": "T",
+        "diameter": 25,
+        "spacing": 125,
+        "layer": "B",
+        "direction": 1,
+        "color": "teal"
+      }
+    }
+  ]
+}

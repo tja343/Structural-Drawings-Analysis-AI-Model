@@ -2,7 +2,13 @@ import cv2
 import numpy as np
 import random
 from typing import List, Tuple, Dict
-from app.synthetic.components import SyntheticBeam, SyntheticText, BoundingBox
+from app.synthetic.components import (
+    BAR_COLOR_PALETTE_BGR,
+    TEXT_COLOR_PALETTE_BGR,
+    SyntheticBeam,
+    SyntheticText,
+    BoundingBox,
+)
 
 try:
     import albumentations as A
@@ -36,18 +42,36 @@ class DrawingGenerator:
             by = random.randint(50, self.height - 200)
             blen = random.randint(200, 300)
             bht = random.randint(30, 80)
-            beam = SyntheticBeam(bx, by, blen, bht)
+            bar_color_name, bar_color_bgr = random.choice(BAR_COLOR_PALETTE_BGR)
+            beam = SyntheticBeam(bx, by, blen, bht, color_name=bar_color_name, color_bgr=bar_color_bgr)
             bboxes.extend(beam.draw(image))
             
             # Generate text for this beam
-            texts = ["H10@300", "T12@150", "2Y16", "Y20 TOP", "R10-200"]
-            t_str = random.choice(texts)
+            t_str = self.generate_reinforcement_label()
             tx = bx + 10
             ty = by - 10 # Place above beam
-            text_el = SyntheticText(tx, ty, t_str, font_scale=0.8, thickness=2)
+            text_color_name, text_color_bgr = random.choice(TEXT_COLOR_PALETTE_BGR)
+            text_el = SyntheticText(
+                tx,
+                ty,
+                t_str,
+                font_scale=0.8,
+                thickness=2,
+                color_name=text_color_name,
+                color_bgr=text_color_bgr,
+            )
             bboxes.extend(text_el.draw(image))
             
         return image, bboxes
+
+    def generate_reinforcement_label(self) -> str:
+        """Generate labels like 'H12 200 T1' for synthetic beam annotations."""
+        bar_type = random.choice(["H", "Y", "T", "R"])
+        diameter = random.choice([8, 10, 12, 16, 20, 25, 32])
+        spacing = random.choice([100, 125, 150, 175, 200, 225, 250, 300])
+        layer = random.choice(["T", "B"])
+        direction = random.choice([1, 2])
+        return f"{bar_type}{diameter} {spacing} {layer}{direction}"
 
     def apply_augmentations(self, image: np.ndarray, bboxes: List[BoundingBox]):
         if self.transform is None:
