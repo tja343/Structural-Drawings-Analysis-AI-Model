@@ -8,10 +8,17 @@ from app.core.config import settings
 class OCRService:
     def __init__(self, lang: str = "en", use_gpu: bool = None):
         self.use_gpu = use_gpu if use_gpu is not None else settings.USE_GPU
-        logger.info(f"Initializing PaddleOCR (Lang: {lang}, GPU: {self.use_gpu})")
+        device = "gpu" if self.use_gpu else "cpu"
+        logger.info(f"Initializing PaddleOCR (Lang: {lang}, Device: {device})")
         
-        # PaddleOCR outputs extreme debug logs by default, show_log=False hides them
-        self.ocr = PaddleOCR(use_angle_cls=True, lang=lang, use_gpu=self.use_gpu, show_log=False)
+        self.ocr = PaddleOCR(
+            lang=lang,
+            device=device,
+            enable_mkldnn=False,
+            use_doc_orientation_classify=False,
+            use_doc_unwarping=False,
+            use_textline_orientation=True,
+        )
 
     def preprocess_crop(self, crop: np.ndarray) -> np.ndarray:
         """Preprocess image crop to improve OCR accuracy."""
@@ -25,7 +32,7 @@ class OCRService:
             gray = cv2.resize(gray, (int(w * scale), 32), interpolation=cv2.INTER_CUBIC)
             
         # Convert back to 3 channels as PaddleOCR expects RGB/BGR layout
-        processed = cv2.cvtColor(gray, cv2.GRAY2BGR)
+        processed = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
         return processed
 
     def crop_region(self, image: np.ndarray, bbox: List[int], padding: int = 2) -> np.ndarray:
@@ -59,22 +66,17 @@ class OCRService:
             processed_crop = self.preprocess_crop(crop)
             
             # 3. OCR Inference
-            ocr_result = self.ocr.ocr(processed_crop, cls=True)
+            ocr_result = self.ocr.predict(processed_crop)
             
             # 4. Postprocessing
-            # ocr_result structure: [[[[[x,y],[x,y],[x,y],[x,y]], ('Text', confidence)], ...]]
-            # If no text found, ocr_result is [None]
             text = ""
             conf = 0.0
             
-            if ocr_result and ocr_result[0]:
-                # Concatenate all text found in this crop
-                extracted_texts = []
-                confidences = []
-                for line in ocr_result[0]:
-                    extracted_texts.append(line[1][0])
-                    confidences.append(line[1][1])
-                
+            if ocr_result:
+                page_result = ocr_result[0]
+                extracted_texts = list(page_result.get("rec_texts", []))
+                confidences = list(page_result.get("rec_scores", []))
+
                 text = " ".join(extracted_texts)
                 conf = sum(confidences) / len(confidences) if confidences else 0.0
                 
