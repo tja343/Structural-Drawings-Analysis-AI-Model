@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import json
+import tempfile
 from pathlib import Path
 
+import cv2
+import numpy as np
 import pandas as pd
 import requests
 import streamlit as st
 from PIL import Image, ImageDraw
 
+from app.preprocessing.color_isolation import ColorIsolationResult, isolate_colored_annotations
 
 ROOT = Path(__file__).parent
 SYNTHETIC_DIR = ROOT / "data" / "synthetic"
@@ -259,6 +263,53 @@ def draw_yolo_boxes(image: Image.Image, labels: list[dict]) -> Image.Image:
     return canvas
 
 
+def pil_to_bgr(image: Image.Image) -> np.ndarray:
+    rgb = np.array(image.convert("RGB"))
+    return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+
+
+def bgr_to_pil(image: np.ndarray) -> Image.Image:
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return Image.fromarray(rgb)
+
+
+def mask_to_pil(mask: np.ndarray) -> Image.Image:
+    return Image.fromarray(mask).convert("RGB")
+
+
+def preprocess_pil_image(image: Image.Image) -> ColorIsolationResult:
+    return isolate_colored_annotations(pil_to_bgr(image))
+
+
+def render_pdf_preview_pages(pdf_bytes: bytes, filename: str, max_pages: int = 3) -> list[tuple[str, Image.Image]]:
+    from app.dataset.pdf_processor import PDFProcessor
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        pdf_path = Path(tmpdir) / filename
+        pdf_path.write_bytes(pdf_bytes)
+        processor = PDFProcessor(dpi=160)
+        page_paths = processor.pdf_to_images(str(pdf_path), tmpdir)
+        pages = []
+        for page_path in page_paths[:max_pages]:
+            page_image = Image.open(page_path).convert("RGB")
+            pages.append((Path(page_path).name, page_image.copy()))
+    return pages
+
+
+def show_preprocessing_steps(title: str, image: Image.Image) -> ColorIsolationResult:
+    result = preprocess_pil_image(image)
+    st.subheader(title)
+    st.caption(
+        f"Colored pixels retained: {result.colored_pixel_count:,} "
+        f"({result.retained_ratio:.2%} of the page)."
+    )
+    original_col, mask_col, cleaned_col = st.columns(3)
+    original_col.image(image.convert("RGB"), caption="1. Original upload", use_container_width=True)
+    mask_col.image(mask_to_pil(result.color_mask), caption="2. HSV color mask", use_container_width=True)
+    cleaned_col.image(bgr_to_pil(result.cleaned), caption="3. Grayscale removed", use_container_width=True)
+    return result
+
+
 @st.cache_resource(show_spinner=False)
 def load_detection_model(weights_path: str):
     from ultralytics import YOLO
@@ -280,8 +331,8 @@ def workflow_panel() -> None:
         <div class="step-row">
             <div class="step"><b>1. Synthetic data</b><span>Generated drawings provide image, YOLO label, and semantic JSON pairs.</span></div>
             <div class="step"><b>2. YOLO split</b><span>The dataset is split into train, validation, and test folders under data/yolo.</span></div>
-            <div class="step"><b>3. Detection model</b><span>YOLOv8 weights detect text regions and structural beam boxes.</span></div>
-            <div class="step"><b>4. API handoff</b><span>FastAPI exposes upload endpoints for image and PDF inference workflows.</span></div>
+            <div class="step"><b>3. Color isolation</b><span>HSV saturation removes grayscale floor-plan lines and keeps colored reinforcement marks.</span></div>
+            <div class="step"><b>4. Detection and JSON</b><span>YOLO and OCR run on the cleaned image before the final engineering JSON is returned.</span></div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -341,7 +392,7 @@ st.markdown(
     """
     <div class="hero-panel">
         <h2>Structural Drawing AI Console</h2>
-        <p>Monitor the synthetic dataset, inspect YOLO labels, preview trained detector output, and call the FastAPI inference service from one dark-mode workspace.</p>
+        <p>Monitor synthetic data, remove grayscale floor-plan backgrounds, preview detector output, and call the FastAPI inference service from one dark-mode workspace.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -431,7 +482,7 @@ elif section == "Synthetic Dataset":
 elif section == "Model Detection":
     info_panel(
         "Detector preview",
-        "This view runs the trained YOLO detector directly inside Streamlit. It is useful for checking whether the synthetic-trained model can find text and beam regions before passing files to the full API pipeline.",
+        "This view removes grayscale floor-plan linework first, then runs the trained YOLO detector on the cleaned image. It mirrors the preprocessing now used by the backend pipeline.",
     )
     weight_path = get_weight_path()
     if weight_path is None:
@@ -447,16 +498,18 @@ elif section == "Model Detection":
             disabled=uploaded is not None or not fallback_images,
         )
 
-        image = Image.open(uploaded) if uploaded else Image.open(sample_choice)
+        image = Image.open(uploaded).convert("RGB") if uploaded else Image.open(sample_choice).convert("RGB")
         confidence = st.slider("Confidence threshold", 0.05, 0.95, 0.25, 0.05)
+        preprocessing = show_preprocessing_steps("Preprocessing", image)
         model = load_detection_model(str(weight_path))
-        predictions = model.predict(image, conf=confidence, verbose=False)
-        rendered, table = draw_predictions(image, predictions)
+        cleaned_image = bgr_to_pil(preprocessing.cleaned)
+        predictions = model.predict(cleaned_image, conf=confidence, verbose=False)
+        rendered, table = draw_predictions(cleaned_image, predictions)
 
         left, right = st.columns([1.4, 1])
         with left:
-            st.subheader("Detection Preview")
-            st.image(rendered, caption="Detection preview", use_container_width=True)
+            st.subheader("4. Detection Preview")
+            st.image(rendered, caption="YOLO detections on cleaned image", use_container_width=True)
         with right:
             st.subheader("Detections")
             if table.empty:
@@ -468,16 +521,29 @@ elif section == "Model Detection":
 elif section == "API Inference":
     info_panel(
         "FastAPI inference bridge",
-        "Upload an image or PDF here to call the backend service. Image uploads go to /api/v1/inference/image; PDFs go to /api/v1/inference/pdf.",
+        "Upload an image or PDF here to see the preprocessing stages and then call the backend service. The backend also removes grayscale floor-plan linework before detection and OCR.",
     )
     st.write("The FastAPI backend must be running on port 8000 before using this panel.")
     uploaded = st.file_uploader("PDF or image", type=["pdf", "png", "jpg", "jpeg"])
     if uploaded:
         is_pdf = uploaded.type == "application/pdf"
         endpoint = "/api/v1/inference/pdf" if is_pdf else "/api/v1/inference/image"
+        upload_bytes = uploaded.getvalue()
+
+        if is_pdf:
+            with st.spinner("Rendering PDF preview pages"):
+                preview_pages = render_pdf_preview_pages(upload_bytes, uploaded.name)
+            st.caption("Showing preprocessing for the first pages. FastAPI processes every page in the uploaded PDF.")
+            for page_name, page_image in preview_pages:
+                with st.expander(page_name, expanded=len(preview_pages) == 1):
+                    show_preprocessing_steps("Preprocessing", page_image)
+        else:
+            preview_image = Image.open(uploaded).convert("RGB")
+            show_preprocessing_steps("Preprocessing", preview_image)
+
         if st.button("Run API inference", type="primary"):
             with st.spinner("Sending file to FastAPI"):
-                files = {"file": (uploaded.name, uploaded.getvalue(), uploaded.type)}
+                files = {"file": (uploaded.name, upload_bytes, uploaded.type)}
                 try:
                     response = requests.post(f"{API_BASE_URL}{endpoint}", files=files, timeout=120)
                     st.code(f"HTTP {response.status_code}")
