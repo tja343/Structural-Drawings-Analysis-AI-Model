@@ -441,7 +441,14 @@ if section == "Overview":
             {"split": "test", "images": test_count},
         ]
     )
-    st.bar_chart(split_df, x="split", y="images", color="#2563eb")
+    if split_df["images"].sum() == 0:
+        st.warning(
+            "No prepared YOLO split was found. Run `python scripts/prepare_dataset.py` "
+            "from the project root to create data/yolo/train, data/yolo/val, and data/yolo/test."
+        )
+    else:
+        st.dataframe(split_df, use_container_width=True, hide_index=True)
+        st.bar_chart(split_df, x="split", y="images", color="#2563eb")
 
     if get_weight_path():
         st.markdown('<span class="status-pill">Model weights available</span>', unsafe_allow_html=True)
