@@ -20,6 +20,32 @@ class OCRService:
             use_textline_orientation=True,
         )
 
+    def _extract_page_results(self, ocr_result) -> List[Dict[str, Any]]:
+        if not ocr_result:
+            return []
+
+        page_result = ocr_result[0]
+        texts = list(page_result.get("rec_texts", []))
+        confidences = list(page_result.get("rec_scores", []))
+        boxes = page_result.get("rec_boxes", [])
+
+        results = []
+        for idx, text in enumerate(texts):
+            if idx < len(boxes):
+                x1, y1, x2, y2 = [int(v) for v in boxes[idx]]
+            else:
+                x1 = y1 = x2 = y2 = 0
+
+            results.append(
+                {
+                    "bbox": [x1, y1, x2, y2],
+                    "text": text,
+                    "confidence": float(confidences[idx]) if idx < len(confidences) else 0.0,
+                }
+            )
+
+        return results
+
     def preprocess_crop(self, crop: np.ndarray) -> np.ndarray:
         """Preprocess image crop to improve OCR accuracy."""
         # Convert to grayscale
@@ -72,10 +98,10 @@ class OCRService:
             text = ""
             conf = 0.0
             
-            if ocr_result:
-                page_result = ocr_result[0]
-                extracted_texts = list(page_result.get("rec_texts", []))
-                confidences = list(page_result.get("rec_scores", []))
+            extracted_results = self._extract_page_results(ocr_result)
+            if extracted_results:
+                extracted_texts = [item["text"] for item in extracted_results]
+                confidences = [item["confidence"] for item in extracted_results]
 
                 text = " ".join(extracted_texts)
                 conf = sum(confidences) / len(confidences) if confidences else 0.0
@@ -87,3 +113,8 @@ class OCRService:
             })
             
         return results
+
+    def process_full_image(self, image: np.ndarray) -> List[Dict[str, Any]]:
+        """Run OCR over the cleaned drawing and return text with image-space boxes."""
+        ocr_result = self.ocr.predict(image)
+        return self._extract_page_results(ocr_result)

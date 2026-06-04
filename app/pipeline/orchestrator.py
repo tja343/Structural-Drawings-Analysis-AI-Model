@@ -10,16 +10,34 @@ from app.schemas.engineering import EngineeringOutputSchema
 from app.core.config import settings
 from app.core.logger import logger
 from app.preprocessing.color_isolation import isolate_colored_annotations
+from app.spatial.geometry import calculate_iou
 
 class InferenceOrchestrator:
     def __init__(self, yolo_weights: str = None):
         logger.info("Initializing Full Inference Pipeline...")
         yolo_weights = yolo_weights or settings.YOLO_MODEL_PATH
-        self.detector = DetectionInference(weights_path=yolo_weights, conf_threshold=0.3)
+        self.detector = DetectionInference(weights_path=yolo_weights, conf_threshold=0.15)
         self.ocr_service = OCRService()
         self.parser = EngineeringParser()
         self.spatial_engine = SpatialEngine(distance_threshold=150.0)
         self.json_engine = JSONGeneratorEngine()
+
+    def _dedupe_detections(self, detections: List[Dict[str, Any]], iou_threshold: float = 0.35) -> List[Dict[str, Any]]:
+        kept = []
+        for detection in sorted(detections, key=lambda item: item["confidence"], reverse=True):
+            duplicate = False
+            for existing in kept:
+                if detection["class_id"] != existing["class_id"]:
+                    continue
+
+                if calculate_iou(detection["bbox"], existing["bbox"]) >= iou_threshold:
+                    duplicate = True
+                    break
+
+            if not duplicate:
+                kept.append(detection)
+
+        return kept
         
     def process_image(self, drawing_id: str, image: np.ndarray) -> EngineeringOutputSchema:
         logger.info(f"[{drawing_id}] Step 1: Removing grayscale floor-plan background")
@@ -31,14 +49,12 @@ class InferenceOrchestrator:
         model_image = preprocessing.cleaned
 
         logger.info(f"[{drawing_id}] Step 2: Running Object Detection")
-        detections = self.detector.predict(model_image)
+        detections = self._dedupe_detections(self.detector.predict(model_image))
         
-        text_regions = [d for d in detections if d["class_id"] == 0]
         structural_regions = [d for d in detections if d["class_id"] != 0]
         
-        logger.info(f"[{drawing_id}] Step 3: Running OCR on {len(text_regions)} text regions")
-        text_bboxes = [t["bbox"] for t in text_regions]
-        ocr_results = self.ocr_service.process_image(model_image, text_bboxes)
+        logger.info(f"[{drawing_id}] Step 3: Running full-image OCR")
+        ocr_results = self.ocr_service.process_full_image(model_image)
         
         logger.info(f"[{drawing_id}] Step 4: Parsing Engineering Semantics")
         parsed_texts = []
