@@ -1,8 +1,6 @@
-import sys
 import shutil
 from pathlib import Path
 import random
-sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
 from app.core.config import yaml_config
 from app.dataset.pdf_processor import PDFProcessor
@@ -58,10 +56,10 @@ def process_pdfs():
         pdf_processor.pdf_to_images(str(pdf), str(proc_dir / "images"))
 
 def main():
-    print("Step 1: Processing Real PDFs into High-DPI PNGs...")
+    print("Processing real PDFs into high-DPI PNGs...")
     process_pdfs()
     
-    print("\nStep 2: Generating Train/Val/Test Splits for Synthetic Data...")
+    print("\nGenerating train/val/test splits for synthetic data...")
     synth_dir = Path(yaml_config.get("paths", {}).get("data_synthetic", "data/synthetic"))
     yolo_dir = Path("data/yolo")
     prepare_splits(synth_dir, yolo_dir)

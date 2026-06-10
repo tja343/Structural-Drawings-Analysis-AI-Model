@@ -40,7 +40,7 @@ class InferenceOrchestrator:
         return kept
         
     def process_image(self, drawing_id: str, image: np.ndarray) -> EngineeringOutputSchema:
-        logger.info(f"[{drawing_id}] Step 1: Removing grayscale floor-plan background")
+        logger.info(f"[{drawing_id}] Removing grayscale floor-plan background")
         preprocessing = isolate_colored_annotations(image)
         logger.info(
             f"[{drawing_id}] Retained {preprocessing.colored_pixel_count} colored pixels "
@@ -48,15 +48,15 @@ class InferenceOrchestrator:
         )
         model_image = preprocessing.cleaned
 
-        logger.info(f"[{drawing_id}] Step 2: Running Object Detection")
+        logger.info(f"[{drawing_id}] Running object detection")
         detections = self._dedupe_detections(self.detector.predict(model_image))
         
         structural_regions = [d for d in detections if d["class_id"] != 0]
         
-        logger.info(f"[{drawing_id}] Step 3: Running full-image OCR")
+        logger.info(f"[{drawing_id}] Running full-image OCR")
         ocr_results = self.ocr_service.process_full_image(model_image)
         
-        logger.info(f"[{drawing_id}] Step 4: Parsing Engineering Semantics")
+        logger.info(f"[{drawing_id}] Parsing engineering annotations")
         parsed_texts = []
         for ocr_res in ocr_results:
             raw_text = ocr_res["text"]
@@ -70,14 +70,14 @@ class InferenceOrchestrator:
                 "parsed": parsed_data["parsed"]
             })
             
-        logger.info(f"[{drawing_id}] Step 5: Spatial Association Engine")
+        logger.info(f"[{drawing_id}] Associating annotations with structural regions")
         associated_regions = self.spatial_engine.associate_text_to_regions(
             texts=parsed_texts,
             regions=structural_regions
         )
         
-        logger.info(f"[{drawing_id}] Step 6: Validating JSON Pydantic Schema")
+        logger.info(f"[{drawing_id}] Building validated JSON output")
         final_output = self.json_engine.build_output(drawing_id, associated_regions)
         
-        logger.info(f"[{drawing_id}] Pipeline Complete. Overall Confidence: {final_output.overall_confidence}")
+        logger.info(f"[{drawing_id}] Pipeline complete. Overall confidence: {final_output.overall_confidence}")
         return final_output

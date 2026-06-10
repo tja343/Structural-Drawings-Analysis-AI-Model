@@ -1,9 +1,3 @@
-import sys
-import os
-from pathlib import Path
-# Add project root to PYTHONPATH
-sys.path.append(str(Path(__file__).parent.parent.absolute()))
-
 from app.synthetic.generator import DrawingGenerator
 from app.synthetic.export import Exporter
 from app.core.config import yaml_config

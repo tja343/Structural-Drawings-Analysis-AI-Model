@@ -1,10 +1,8 @@
 import sys
 import argparse
 from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
 from app.models.detection.train import DetectionTrainer
-from app.core.config import yaml_config
 
 def main():
     parser = argparse.ArgumentParser(description="Train the YOLO detection model.")
@@ -16,7 +14,7 @@ def main():
     data_yaml = str(Path("data/yolo/dataset.yaml").absolute())
     
     if not Path(data_yaml).exists():
-        print(f"Error: {data_yaml} not found. Please run scripts/prepare_dataset.py first.")
+        print(f"Error: {data_yaml} not found. Please run python -m scripts.prepare_dataset first.")
         sys.exit(1)
         
     print("Initializing YOLOv8 Detection Trainer...")

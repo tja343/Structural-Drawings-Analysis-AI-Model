@@ -40,170 +40,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown(
-    """
-    <style>
-    :root {
-        --bg: #0b1018;
-        --panel: #111827;
-        --panel-2: #172033;
-        --border: #2a3447;
-        --text: #f4f7fb;
-        --muted: #aab7c8;
-        --accent: #3dd6c6;
-        --accent-2: #76a9ff;
-        --warning: #f5b451;
-        --danger: #ff7a7a;
-    }
-    .stApp {
-        background: var(--bg);
-        color: var(--text);
-    }
-    .stApp, .stMarkdown, .stText, p, span, label, div {
-        color: var(--text);
-    }
-    section[data-testid="stSidebar"] {
-        background: #080d14;
-        border-right: 1px solid var(--border);
-    }
-    section[data-testid="stSidebar"] * {
-        color: var(--text);
-    }
-    [data-testid="stHeader"] {
-        background: rgba(11, 16, 24, 0.88);
-    }
-    h1, h2, h3 {
-        color: var(--text);
-        letter-spacing: 0;
-    }
-    p, .stCaptionContainer {
-        color: var(--muted);
-    }
-    div[data-testid="stMetric"] {
-        background: linear-gradient(180deg, #162032 0%, #111827 100%);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 16px 18px;
-        box-shadow: 0 10px 24px rgba(0,0,0,0.22);
-    }
-    div[data-testid="stMetric"] label,
-    div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-        color: var(--text);
-    }
-    .hero-panel {
-        background: linear-gradient(135deg, #121b2b 0%, #0d1824 58%, #102421 100%);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 22px 24px;
-        margin: 4px 0 18px 0;
-    }
-    .hero-panel h2 {
-        margin: 0 0 8px 0;
-        font-size: 1.45rem;
-    }
-    .hero-panel p {
-        margin: 0;
-        line-height: 1.55;
-        color: var(--muted);
-    }
-    .info-panel {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
-    }
-    .info-panel strong {
-        color: var(--text);
-    }
-    .info-panel p {
-        margin: 5px 0 0 0;
-        line-height: 1.5;
-        color: var(--muted);
-    }
-    .step-row {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin: 12px 0 20px 0;
-    }
-    .step {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 12px 14px;
-        min-height: 96px;
-    }
-    .step b {
-        color: var(--accent);
-        display: block;
-        margin-bottom: 6px;
-    }
-    .step span {
-        color: var(--muted);
-        font-size: 0.92rem;
-        line-height: 1.35;
-    }
-    .path-chip {
-        display: inline-block;
-        max-width: 100%;
-        padding: 5px 8px;
-        border-radius: 6px;
-        background: #0d1521;
-        border: 1px solid var(--border);
-        color: var(--muted);
-        font-family: Consolas, monospace;
-        font-size: 0.78rem;
-        overflow-wrap: anywhere;
-    }
-    .status-pill {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 999px;
-        background: rgba(61, 214, 198, 0.14);
-        border: 1px solid rgba(61, 214, 198, 0.4);
-        color: #9ef2e8;
-        font-size: 0.82rem;
-        font-weight: 600;
-    }
-    .warn-pill {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 999px;
-        background: rgba(245, 180, 81, 0.14);
-        border: 1px solid rgba(245, 180, 81, 0.4);
-        color: #ffd28a;
-        font-size: 0.82rem;
-        font-weight: 600;
-    }
-    .stDataFrame, [data-testid="stJson"] {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .stAlert {
-        background: var(--panel);
-        color: var(--text);
-        border: 1px solid var(--border);
-    }
-    button[kind="primary"] {
-        background: var(--accent);
-        color: #071013;
-        border: 0;
-    }
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="input"] > div {
-        background: var(--panel);
-        border-color: var(--border);
-        color: var(--text);
-    }
-    @media (max-width: 900px) {
-        .step-row { grid-template-columns: 1fr; }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+def load_stylesheet(path: Path) -> None:
+    css = path.read_text(encoding="utf-8")
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
+
+load_stylesheet(ROOT / "assets" / "style.css")
 
 
 def count_files(path: Path, pattern: str) -> int:
@@ -443,7 +285,7 @@ if section == "Overview":
     )
     if split_df["images"].sum() == 0:
         st.warning(
-            "No prepared YOLO split was found. Run `python scripts/prepare_dataset.py` "
+            "No prepared YOLO split was found. Run `python -m scripts.prepare_dataset` "
             "from the project root to create data/yolo/train, data/yolo/val, and data/yolo/test."
         )
     else:
@@ -462,7 +304,7 @@ elif section == "Synthetic Dataset":
     )
     images = synthetic_images()
     if not images:
-        st.warning("No synthetic images found. Run scripts/generate_synthetic_data.py first.")
+        st.warning("No synthetic images found. Run python -m scripts.generate_synthetic_data first.")
     else:
         selected = st.selectbox("Sample image", images, format_func=lambda p: p.name)
         label_path = SYNTHETIC_DIR / "labels" / f"{selected.stem}.txt"

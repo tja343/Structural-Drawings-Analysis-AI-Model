@@ -1,8 +1,6 @@
 import sys
 import cv2
 from pathlib import Path
-import json
-sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
 from app.models.ocr.service import OCRService
 from app.models.detection.inference import DetectionInference
