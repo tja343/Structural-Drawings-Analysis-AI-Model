@@ -15,6 +15,7 @@ from app.preprocessing.color_isolation import ColorIsolationResult, isolate_colo
 
 ROOT = Path(__file__).parent
 SYNTHETIC_DIR = ROOT / "data" / "synthetic"
+SYNTHETIC_OVERLAY_DIR = ROOT / "data" / "synthetic_overlays_cleaned"
 YOLO_DIR = ROOT / "data" / "yolo"
 TRAINED_WEIGHTS = ROOT / "models" / "yolov8_custom.pt"
 RUN_WEIGHTS = ROOT / "runs" / "detect" / "train_run" / "weights" / "best.pt"
@@ -52,8 +53,27 @@ def count_files(path: Path, pattern: str) -> int:
     return len(list(path.glob(pattern))) if path.exists() else 0
 
 
-def synthetic_images() -> list[Path]:
-    return sorted((SYNTHETIC_DIR / "images").glob("*.png"))
+def sample_sources() -> list[dict]:
+    sources = [
+        ("Synthetic", SYNTHETIC_DIR),
+        ("Floor-plan overlay", SYNTHETIC_OVERLAY_DIR),
+    ]
+    samples = []
+    for source_name, root in sources:
+        for image_path in sorted((root / "images").glob("*.png")):
+            samples.append(
+                {
+                    "source": source_name,
+                    "image": image_path,
+                    "label": root / "labels" / f"{image_path.stem}.txt",
+                    "semantic": root / "semantics" / f"{image_path.stem}.json",
+                }
+            )
+    return samples
+
+
+def sample_label(sample: dict) -> str:
+    return f"{sample['source']} / {sample['image'].name}"
 
 
 def read_json(path: Path) -> dict:
@@ -241,15 +261,21 @@ st.markdown(
 )
 
 if section == "Overview":
-    image_count = count_files(SYNTHETIC_DIR / "images", "*.png")
-    label_count = count_files(SYNTHETIC_DIR / "labels", "*.txt")
-    semantic_count = count_files(SYNTHETIC_DIR / "semantics", "*.json")
+    synthetic_image_count = count_files(SYNTHETIC_DIR / "images", "*.png")
+    synthetic_label_count = count_files(SYNTHETIC_DIR / "labels", "*.txt")
+    synthetic_semantic_count = count_files(SYNTHETIC_DIR / "semantics", "*.json")
+    overlay_image_count = count_files(SYNTHETIC_OVERLAY_DIR / "images", "*.png")
+    overlay_label_count = count_files(SYNTHETIC_OVERLAY_DIR / "labels", "*.txt")
+    overlay_semantic_count = count_files(SYNTHETIC_OVERLAY_DIR / "semantics", "*.json")
+    image_count = synthetic_image_count + overlay_image_count
+    label_count = synthetic_label_count + overlay_label_count
+    semantic_count = synthetic_semantic_count + overlay_semantic_count
     train_count = count_files(YOLO_DIR / "train" / "images", "*.png")
     val_count = count_files(YOLO_DIR / "val" / "images", "*.png")
     test_count = count_files(YOLO_DIR / "test" / "images", "*.png")
 
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Synthetic Images", image_count)
+    col1.metric("Sample Images", image_count)
     col2.metric("YOLO Labels", label_count)
     col3.metric("Semantics", semantic_count)
     col4.metric("Trained Weights", "Ready" if get_weight_path() else "Missing")
@@ -260,7 +286,8 @@ if section == "Overview":
     with left_info:
         info_panel(
             "Current dataset state",
-            f"{image_count} generated drawings are available. YOLO labels and semantic JSON files should match this count before training.",
+            f"{synthetic_image_count} base synthetic drawings and {overlay_image_count} cleaned floor-plan overlay drawings are available. "
+            f"The active YOLO training split now contains {train_count} images.",
         )
     with right_info:
         model_text = str(get_weight_path()) if get_weight_path() else "No trained weight file found."
@@ -292,6 +319,25 @@ if section == "Overview":
         st.dataframe(split_df, use_container_width=True, hide_index=True)
         st.bar_chart(split_df, x="split", y="images", color="#2563eb")
 
+    st.subheader("Sample Sources")
+    source_df = pd.DataFrame(
+        [
+            {
+                "source": "Synthetic",
+                "images": synthetic_image_count,
+                "labels": synthetic_label_count,
+                "semantics": synthetic_semantic_count,
+            },
+            {
+                "source": "Cleaned floor-plan overlays",
+                "images": overlay_image_count,
+                "labels": overlay_label_count,
+                "semantics": overlay_semantic_count,
+            },
+        ]
+    )
+    st.dataframe(source_df, use_container_width=True, hide_index=True)
+
     if get_weight_path():
         st.markdown('<span class="status-pill">Model weights available</span>', unsafe_allow_html=True)
     else:
@@ -300,25 +346,26 @@ if section == "Overview":
 elif section == "Synthetic Dataset":
     info_panel(
         "Synthetic dataset explorer",
-        "Use this view to inspect generated drawings, their YOLO bounding boxes, and the semantic text metadata exported with each image.",
+        "Use this view to inspect generated drawings, cleaned floor-plan overlays, their YOLO bounding boxes, and the semantic text metadata exported with each image.",
     )
-    images = synthetic_images()
-    if not images:
+    samples = sample_sources()
+    if not samples:
         st.warning("No synthetic images found. Run python -m scripts.generate_synthetic_data first.")
     else:
-        selected = st.selectbox("Sample image", images, format_func=lambda p: p.name)
-        label_path = SYNTHETIC_DIR / "labels" / f"{selected.stem}.txt"
-        semantic_path = SYNTHETIC_DIR / "semantics" / f"{selected.stem}.json"
+        selected = st.selectbox("Sample image", samples, format_func=sample_label)
+        image_path = selected["image"]
+        label_path = selected["label"]
+        semantic_path = selected["semantic"]
         labels = load_yolo_labels(label_path)
-        base_image = Image.open(selected)
+        base_image = Image.open(image_path)
 
         left, right = st.columns([1.4, 1])
         with left:
             st.subheader("Rendered Sample")
             st.caption("Boxes are drawn from the YOLO label file. The generated bars and reinforcement text use randomized visible colors.")
-            st.image(draw_yolo_boxes(base_image, labels), caption=selected.name, use_container_width=True)
+            st.image(draw_yolo_boxes(base_image, labels), caption=sample_label(selected), use_container_width=True)
         with right:
-            st.markdown(f'<span class="path-chip">{selected}</span>', unsafe_allow_html=True)
+            st.markdown(f'<span class="path-chip">{image_path}</span>', unsafe_allow_html=True)
             st.subheader("Annotations")
             label_df = pd.DataFrame(labels)
             if label_df.empty:
@@ -339,15 +386,15 @@ elif section == "Model Detection":
     else:
         st.info(f"Using weights: {weight_path}")
         uploaded = st.file_uploader("Upload a drawing image", type=["png", "jpg", "jpeg"])
-        fallback_images = synthetic_images()
+        fallback_samples = sample_sources()
         sample_choice = st.selectbox(
-            "Or use a synthetic sample",
-            fallback_images,
-            format_func=lambda p: p.name,
-            disabled=uploaded is not None or not fallback_images,
+            "Or use a sample image",
+            fallback_samples,
+            format_func=sample_label,
+            disabled=uploaded is not None or not fallback_samples,
         )
 
-        image = Image.open(uploaded).convert("RGB") if uploaded else Image.open(sample_choice).convert("RGB")
+        image = Image.open(uploaded).convert("RGB") if uploaded else Image.open(sample_choice["image"]).convert("RGB")
         confidence = st.slider("Confidence threshold", 0.05, 0.95, 0.25, 0.05)
         preprocessing = show_preprocessing_steps("Preprocessing", image)
         model = load_detection_model(str(weight_path))

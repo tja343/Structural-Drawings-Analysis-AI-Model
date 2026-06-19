@@ -1,0 +1,157 @@
+{
+  "image_id": "overlay_07",
+  "annotations": [
+    {
+      "bbox": [
+        210,
+        137,
+        409,
+        178
+      ],
+      "text": "H16 100 T1",
+      "confidence": 0.9970012903213501,
+      "semantic": {
+        "raw": "H16 100 T1",
+        "corrected": "H16 100 T1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 100,
+        "quantity": null,
+        "layer": "T",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        671,
+        148,
+        826,
+        179
+      ],
+      "text": "Y12 150 T2",
+      "confidence": 0.9604753255844116,
+      "semantic": {
+        "raw": "Y12 150 T2",
+        "corrected": "Y12 150 T2",
+        "parsed": true,
+        "bar_type": "Y",
+        "diameter": 12,
+        "spacing": 150,
+        "quantity": null,
+        "layer": "T",
+        "direction": 2
+      }
+    },
+    {
+      "bbox": [
+        764,
+        330,
+        926,
+        362
+      ],
+      "text": "H25 175 B1",
+      "confidence": 0.9587888717651367,
+      "semantic": {
+        "raw": "H25 175 B1",
+        "corrected": "H25 175 B1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 25,
+        "spacing": 175,
+        "quantity": null,
+        "layer": "B",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        205,
+        452,
+        390,
+        487
+      ],
+      "text": "H16 100 T1",
+      "confidence": 0.9974232912063599,
+      "semantic": {
+        "raw": "H16 100 T1",
+        "corrected": "H16 100 T1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 100,
+        "quantity": null,
+        "layer": "T",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        94,
+        534,
+        256,
+        568
+      ],
+      "text": "Y16 175 B2",
+      "confidence": 0.9987459182739258,
+      "semantic": {
+        "raw": "Y16 175 B2",
+        "corrected": "Y16 175 B2",
+        "parsed": true,
+        "bar_type": "Y",
+        "diameter": 16,
+        "spacing": 175,
+        "quantity": null,
+        "layer": "B",
+        "direction": 2
+      }
+    }
+  ],
+  "bar_regions": [
+    {
+      "bbox": [
+        167,
+        183,
+        357,
+        247
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        671,
+        187,
+        799,
+        281
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        757,
+        364,
+        1038,
+        435
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        790,
+        461,
+        959,
+        562
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        87,
+        495,
+        386,
+        626
+      ],
+      "class_id": 3
+    }
+  ]
+}

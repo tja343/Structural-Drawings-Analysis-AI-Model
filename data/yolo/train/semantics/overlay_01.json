@@ -1,0 +1,187 @@
+{
+  "image_id": "overlay_01",
+  "annotations": [
+    {
+      "bbox": [
+        648,
+        35,
+        800,
+        63
+      ],
+      "text": "R16 250 T1",
+      "confidence": 0.9997130632400513,
+      "semantic": {
+        "raw": "R16 250 T1",
+        "corrected": "R16 250 T1",
+        "parsed": true,
+        "bar_type": "R",
+        "diameter": 16,
+        "spacing": 250,
+        "quantity": null,
+        "layer": "T",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        657,
+        161,
+        849,
+        199
+      ],
+      "text": "T25 125 B1",
+      "confidence": 0.993964672088623,
+      "semantic": {
+        "raw": "T25 125 B1",
+        "corrected": "T25 125 B1",
+        "parsed": true,
+        "bar_type": "T",
+        "diameter": 25,
+        "spacing": 125,
+        "quantity": null,
+        "layer": "B",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        440,
+        164,
+        607,
+        195
+      ],
+      "text": "H16 100 T1",
+      "confidence": 0.9929393529891968,
+      "semantic": {
+        "raw": "H16 100 T1",
+        "corrected": "H16 100 T1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 100,
+        "quantity": null,
+        "layer": "T",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        247,
+        351,
+        432,
+        389
+      ],
+      "text": "H16 100 T1",
+      "confidence": 0.988162636756897,
+      "semantic": {
+        "raw": "H16 100 T1",
+        "corrected": "H16 100 T1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 100,
+        "quantity": null,
+        "layer": "T",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        826,
+        353,
+        1016,
+        391
+      ],
+      "text": "H12 200 B1",
+      "confidence": 0.9533283114433289,
+      "semantic": {
+        "raw": "H12 200 B1",
+        "corrected": "H12 200 B1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 12,
+        "spacing": 200,
+        "quantity": null,
+        "layer": "B",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        264,
+        436,
+        426,
+        470
+      ],
+      "text": "H12 200 B1",
+      "confidence": 0.9499964714050293,
+      "semantic": {
+        "raw": "H12 200 B1",
+        "corrected": "H12 200 B1",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 12,
+        "spacing": 200,
+        "quantity": null,
+        "layer": "B",
+        "direction": 1
+      }
+    }
+  ],
+  "bar_regions": [
+    {
+      "bbox": [
+        640,
+        67,
+        872,
+        136
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        607,
+        196,
+        762,
+        263
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        380,
+        201,
+        554,
+        312
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        240,
+        397,
+        357,
+        445
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        821,
+        399,
+        919,
+        445
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        244,
+        473,
+        350,
+        577
+      ],
+      "class_id": 3
+    }
+  ]
+}

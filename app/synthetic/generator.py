@@ -36,15 +36,21 @@ class DrawingGenerator:
                 compression_transform,
             ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels']))
 
-    def generate_random_drawing(self) -> Tuple[np.ndarray, List[BoundingBox]]:
-        # White background
-        image = np.ones((self.height, self.width, 3), dtype=np.uint8) * 255
+    def generate_random_drawing(self, base_image: np.ndarray = None) -> Tuple[np.ndarray, List[BoundingBox]]:
+        if base_image is not None:
+            image = base_image.copy()
+            height, width = image.shape[:2]
+        else:
+            # White background
+            image = np.ones((self.height, self.width, 3), dtype=np.uint8) * 255
+            height, width = self.height, self.width
+            
         bboxes = []
         
         # Generate 1-3 beams
         for _ in range(random.randint(1, 3)):
-            bx = random.randint(50, self.width - 400)
-            by = random.randint(50, self.height - 200)
+            bx = random.randint(50, max(51, width - 400))
+            by = random.randint(50, max(51, height - 200))
             blen = random.randint(200, 300)
             bht = random.randint(30, 80)
             bar_color_name, bar_color_bgr = random.choice(BAR_COLOR_PALETTE_BGR)

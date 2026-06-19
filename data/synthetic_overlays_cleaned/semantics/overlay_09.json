@@ -1,0 +1,145 @@
+{
+  "image_id": "overlay_09",
+  "annotations": [
+    {
+      "bbox": [
+        225,
+        158,
+        769,
+        206
+      ],
+      "text": "Y12 150 T2 H10 100 B2H10 100 B2",
+      "confidence": 0.9878821969032288,
+      "semantic": {
+        "raw": "Y12 150 T2 H10 100 B2H10 100 B2",
+        "corrected": "Y12 150 T2 H10 100 B2H10 100 B2",
+        "parsed": true,
+        "bar_type": "Y",
+        "diameter": 12,
+        "spacing": 150,
+        "quantity": null,
+        "layer": "T",
+        "direction": 2
+      }
+    },
+    {
+      "bbox": [
+        636,
+        336,
+        800,
+        368
+      ],
+      "text": "H20 100 B2",
+      "confidence": 0.9645729064941406,
+      "semantic": {
+        "raw": "H20 100 B2",
+        "corrected": "H20 100 B2",
+        "parsed": true,
+        "bar_type": "H",
+        "diameter": 20,
+        "spacing": 100,
+        "quantity": null,
+        "layer": "B",
+        "direction": 2
+      }
+    },
+    {
+      "bbox": [
+        377,
+        449,
+        550,
+        480
+      ],
+      "text": "T25 125 B1",
+      "confidence": 0.9980646371841431,
+      "semantic": {
+        "raw": "T25 125 B1",
+        "corrected": "T25 125 B1",
+        "parsed": true,
+        "bar_type": "T",
+        "diameter": 25,
+        "spacing": 125,
+        "quantity": null,
+        "layer": "B",
+        "direction": 1
+      }
+    },
+    {
+      "bbox": [
+        545,
+        513,
+        697,
+        544
+      ],
+      "text": "T10 225 T1",
+      "confidence": 0.9562891125679016,
+      "semantic": {
+        "raw": "T10 225 T1",
+        "corrected": "T10 225 T1",
+        "parsed": true,
+        "bar_type": "T",
+        "diameter": 10,
+        "spacing": 225,
+        "quantity": null,
+        "layer": "T",
+        "direction": 1
+      }
+    }
+  ],
+  "bar_regions": [
+    {
+      "bbox": [
+        176,
+        207,
+        354,
+        286
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        385,
+        214,
+        488,
+        303
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        577,
+        214,
+        776,
+        277
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        629,
+        370,
+        848,
+        430
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        539,
+        437,
+        873,
+        619
+      ],
+      "class_id": 3
+    },
+    {
+      "bbox": [
+        381,
+        488,
+        488,
+        555
+      ],
+      "class_id": 3
+    }
+  ]
+}
