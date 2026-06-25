@@ -10,7 +10,8 @@ The current model is trained against the synthetic drawing style included in thi
 - A YOLOv8 detector for drawing regions such as text and beams.
 - OCR and parsing for reinforcement labels such as `H10@300`, `T20 300 B2`, and `Y16 TOP`.
 - Spatial association that attaches parsed text annotations to nearby structural elements.
-- A Streamlit dashboard for inspection, preview, and API calls.
+- A React dashboard for inspection, preview, and API calls.
+- The legacy Streamlit dashboard remains available in `streamlit_app.py`.
 - A FastAPI backend for image and PDF inference.
 
 Useful paths:
@@ -22,7 +23,8 @@ data/synthetic/       generated synthetic samples
 data/yolo/            YOLO train/val/test split
 models/               checked-in detector weights
 scripts/              dataset, training, and utility scripts
-streamlit_app.py      dashboard entry point
+frontend/             React/Vite dashboard
+streamlit_app.py      legacy dashboard entry point
 ```
 
 ## Environment
@@ -52,17 +54,27 @@ $env:USE_GPU="false"
 .\.venv312\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Start Streamlit in a second terminal:
+Start React in a second terminal:
 
 ```powershell
-$env:USE_GPU="false"
-.\.venv312\Scripts\python.exe -m streamlit run streamlit_app.py --server.address 127.0.0.1 --server.port 8501
+cd frontend
+npm install
+npm run dev -- --port 5173
 ```
 
 Open:
 
 ```text
-http://127.0.0.1:8501
+http://127.0.0.1:5173
+```
+
+The interface blueprint is documented in `docs/interface_blueprint.md`.
+
+To run the legacy Streamlit dashboard instead:
+
+```powershell
+$env:USE_GPU="false"
+.\.venv312\Scripts\python.exe -m streamlit run streamlit_app.py --server.address 127.0.0.1 --server.port 8501
 ```
 
 FastAPI docs are available at:
