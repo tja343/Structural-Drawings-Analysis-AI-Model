@@ -10,7 +10,7 @@ except ImportError:
     mlflow = None
 
 class DetectionTrainer:
-    def __init__(self, data_yaml: str, base_model: str = "yolov8n.pt", project_name: str = "structural_ai_detection"):
+    def __init__(self, data_yaml: str, base_model: str = "yolov8n-seg.pt", project_name: str = "structural_ai_segmentation"):
         self.data_yaml = str(Path(data_yaml).absolute())
         self.base_model = base_model
         self.project_name = project_name
@@ -40,7 +40,7 @@ class DetectionTrainer:
                 imgsz=imgsz,
                 batch=batch,
                 device=device,
-                project="runs/detect",
+                project="runs/segment",
                 name="train_run",
                 exist_ok=True,
                 save=True,
@@ -52,9 +52,9 @@ class DetectionTrainer:
 
             if mlflow is not None:
                 mlflow.log_metrics({
-                    "map50": results.box.map50,
-                    "map": results.box.map
+                    "map50": getattr(results, "seg", results.box).map50,
+                    "map": getattr(results, "seg", results.box).map
                 })
 
-            logger.info("Training complete. Models saved to runs/detect/train_run/weights/")
+            logger.info("Training complete. Models saved to runs/segment/train_run/weights/")
         return results

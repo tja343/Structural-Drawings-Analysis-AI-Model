@@ -3,56 +3,74 @@
   "annotations": [
     {
       "bbox": [
-        60,
-        61,
-        213,
-        87
+        135,
+        170,
+        301,
+        200
       ],
-      "text": "R32 300 T1",
+      "text": "H25 250 T1",
       "semantic": {
-        "raw": "R32 300 T1",
-        "bar_type": "R",
-        "diameter": 32,
-        "spacing": 300,
-        "layer": "T",
-        "direction": 1,
-        "color": "blue"
-      }
-    },
-    {
-      "bbox": [
-        312,
-        447,
-        466,
-        473
-      ],
-      "text": "H25 125 T2",
-      "semantic": {
-        "raw": "H25 125 T2",
+        "raw": "H25 250 T1",
         "bar_type": "H",
         "diameter": 25,
-        "spacing": 125,
+        "spacing": 250,
         "layer": "T",
-        "direction": 2,
+        "direction": 1,
         "color": "magenta"
       }
     },
     {
       "bbox": [
-        180,
-        156,
-        319,
-        182
+        186,
+        537,
+        347,
+        566
       ],
-      "text": "Y8 225 B1",
+      "text": "Y20 225 T2",
       "semantic": {
-        "raw": "Y8 225 B1",
+        "raw": "Y20 225 T2",
         "bar_type": "Y",
-        "diameter": 8,
+        "diameter": 20,
         "spacing": 225,
-        "layer": "B",
-        "direction": 1,
+        "layer": "T",
+        "direction": 2,
         "color": "orange"
+      }
+    },
+    {
+      "bbox": [
+        580,
+        186,
+        737,
+        215
+      ],
+      "text": "Y20 300 T2",
+      "semantic": {
+        "raw": "Y20 300 T2",
+        "bar_type": "Y",
+        "diameter": 20,
+        "spacing": 300,
+        "layer": "T",
+        "direction": 2,
+        "color": "blue"
+      }
+    },
+    {
+      "bbox": [
+        617,
+        59,
+        772,
+        88
+      ],
+      "text": "T25 300 T2",
+      "semantic": {
+        "raw": "T25 300 T2",
+        "bar_type": "T",
+        "diameter": 25,
+        "spacing": 300,
+        "layer": "T",
+        "direction": 2,
+        "color": "red"
       }
     }
   ]

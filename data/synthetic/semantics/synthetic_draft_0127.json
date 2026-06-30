@@ -1,0 +1,77 @@
+{
+  "image_id": "synthetic_draft_0127",
+  "annotations": [
+    {
+      "bbox": [
+        127,
+        445,
+        287,
+        475
+      ],
+      "text": "Y32 100 B1",
+      "semantic": {
+        "raw": "Y32 100 B1",
+        "bar_type": "Y",
+        "diameter": 32,
+        "spacing": 100,
+        "layer": "B",
+        "direction": 1,
+        "color": "orange"
+      }
+    },
+    {
+      "bbox": [
+        315,
+        21,
+        455,
+        51
+      ],
+      "text": "T8 225 B2",
+      "semantic": {
+        "raw": "T8 225 B2",
+        "bar_type": "T",
+        "diameter": 8,
+        "spacing": 225,
+        "layer": "B",
+        "direction": 2,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        478,
+        368,
+        632,
+        397
+      ],
+      "text": "R16 150 T2",
+      "semantic": {
+        "raw": "R16 150 T2",
+        "bar_type": "R",
+        "diameter": 16,
+        "spacing": 150,
+        "layer": "T",
+        "direction": 2,
+        "color": "orange"
+      }
+    },
+    {
+      "bbox": [
+        464,
+        272,
+        624,
+        300
+      ],
+      "text": "H16 125 B1",
+      "semantic": {
+        "raw": "H16 125 B1",
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 125,
+        "layer": "B",
+        "direction": 1,
+        "color": "blue"
+      }
+    }
+  ]
+}

@@ -23,24 +23,19 @@ class Exporter:
         
         height, width, _ = image.shape
         
-        # 2. Export YOLO labels
+        # 2. Export YOLO labels (Segmentation format)
         yolo_lines = []
         for b in bboxes:
-            # YOLO format: class x_center y_center width height (normalized)
-            bw = b.x2 - b.x1
-            bh = b.y2 - b.y1
-            x_center = (b.x1 + bw / 2.0) / width
-            y_center = (b.y1 + bh / 2.0) / height
-            norm_w = bw / width
-            norm_h = bh / height
+            # YOLO Seg format: class x1 y1 x2 y2 ... xn yn (normalized)
+            seg_points = b.segmentation_points
+            norm_points = []
+            for p in seg_points:
+                nx = max(0.0, min(1.0, p[0] / width))
+                ny = max(0.0, min(1.0, p[1] / height))
+                norm_points.append(f"{nx:.6f} {ny:.6f}")
             
-            # Clip between 0 and 1
-            x_center = max(0.0, min(1.0, x_center))
-            y_center = max(0.0, min(1.0, y_center))
-            norm_w = max(0.0, min(1.0, norm_w))
-            norm_h = max(0.0, min(1.0, norm_h))
-            
-            yolo_lines.append(f"{b.class_id} {x_center:.6f} {y_center:.6f} {norm_w:.6f} {norm_h:.6f}")
+            points_str = " ".join(norm_points)
+            yolo_lines.append(f"{b.class_id} {points_str}")
             
         with open(self.yolo_dir / f"{image_id}.txt", "w") as f:
             f.write("\n".join(yolo_lines))

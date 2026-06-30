@@ -3,56 +3,74 @@
   "annotations": [
     {
       "bbox": [
-        453,
-        428,
-        606,
-        454
+        249,
+        76,
+        407,
+        102
       ],
-      "text": "R20 125 T1",
+      "text": "H16 150 B2",
       "semantic": {
-        "raw": "R20 125 T1",
-        "bar_type": "R",
-        "diameter": 20,
+        "raw": "H16 150 B2",
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 150,
+        "layer": "B",
+        "direction": 2,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        523,
+        308,
+        656,
+        334
+      ],
+      "text": "T8 175 T2",
+      "semantic": {
+        "raw": "T8 175 T2",
+        "bar_type": "T",
+        "diameter": 8,
+        "spacing": 175,
+        "layer": "T",
+        "direction": 2,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        139,
+        454,
+        293,
+        480
+      ],
+      "text": "H16 125 T2",
+      "semantic": {
+        "raw": "H16 125 T2",
+        "bar_type": "H",
+        "diameter": 16,
         "spacing": 125,
         "layer": "T",
-        "direction": 1,
-        "color": "magenta"
+        "direction": 2,
+        "color": "blue"
       }
     },
     {
       "bbox": [
-        289,
-        252,
-        447,
-        278
+        570,
+        560,
+        719,
+        586
       ],
-      "text": "H20 250 B1",
+      "text": "T12 150 T1",
       "semantic": {
-        "raw": "H20 250 B1",
-        "bar_type": "H",
-        "diameter": 20,
-        "spacing": 250,
-        "layer": "B",
-        "direction": 1,
-        "color": "orange"
-      }
-    },
-    {
-      "bbox": [
-        435,
-        176,
-        584,
-        202
-      ],
-      "text": "T16 100 T1",
-      "semantic": {
-        "raw": "T16 100 T1",
+        "raw": "T12 150 T1",
         "bar_type": "T",
-        "diameter": 16,
-        "spacing": 100,
+        "diameter": 12,
+        "spacing": 150,
         "layer": "T",
         "direction": 1,
-        "color": "magenta"
+        "color": "violet"
       }
     }
   ]

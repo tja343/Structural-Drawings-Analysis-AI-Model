@@ -3,20 +3,74 @@
   "annotations": [
     {
       "bbox": [
-        328,
-        217,
-        477,
-        243
+        302,
+        329,
+        453,
+        355
       ],
-      "text": "T20 150 T2",
+      "text": "Y16 100 T2",
       "semantic": {
-        "raw": "T20 150 T2",
-        "bar_type": "T",
-        "diameter": 20,
-        "spacing": 150,
+        "raw": "Y16 100 T2",
+        "bar_type": "Y",
+        "diameter": 16,
+        "spacing": 100,
         "layer": "T",
         "direction": 2,
         "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        313,
+        570,
+        466,
+        596
+      ],
+      "text": "T25 250 B1",
+      "semantic": {
+        "raw": "T25 250 B1",
+        "bar_type": "T",
+        "diameter": 25,
+        "spacing": 250,
+        "layer": "B",
+        "direction": 1,
+        "color": "orange"
+      }
+    },
+    {
+      "bbox": [
+        520,
+        516,
+        659,
+        542
+      ],
+      "text": "Y8 100 B2",
+      "semantic": {
+        "raw": "Y8 100 B2",
+        "bar_type": "Y",
+        "diameter": 8,
+        "spacing": 100,
+        "layer": "B",
+        "direction": 2,
+        "color": "teal"
+      }
+    },
+    {
+      "bbox": [
+        558,
+        209,
+        709,
+        235
+      ],
+      "text": "Y10 150 T2",
+      "semantic": {
+        "raw": "Y10 150 T2",
+        "bar_type": "Y",
+        "diameter": 10,
+        "spacing": 150,
+        "layer": "T",
+        "direction": 2,
+        "color": "orange"
       }
     }
   ]

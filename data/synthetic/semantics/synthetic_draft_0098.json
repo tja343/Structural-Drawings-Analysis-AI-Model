@@ -3,20 +3,20 @@
   "annotations": [
     {
       "bbox": [
-        602,
-        559,
-        759,
-        585
+        441,
+        398,
+        613,
+        428
       ],
-      "text": "R32 250 B2",
+      "text": "Y32 200 T2",
       "semantic": {
-        "raw": "R32 250 B2",
-        "bar_type": "R",
+        "raw": "Y32 200 T2",
+        "bar_type": "Y",
         "diameter": 32,
-        "spacing": 250,
-        "layer": "B",
+        "spacing": 200,
+        "layer": "T",
         "direction": 2,
-        "color": "orange"
+        "color": "red"
       }
     }
   ]

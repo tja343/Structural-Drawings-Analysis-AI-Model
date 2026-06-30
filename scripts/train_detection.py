@@ -17,8 +17,8 @@ def main():
         print(f"Error: {data_yaml} not found. Please run python -m scripts.prepare_dataset first.")
         sys.exit(1)
         
-    print("Initializing YOLOv8 Detection Trainer...")
-    trainer = DetectionTrainer(data_yaml=data_yaml, base_model="yolov8n.pt")
+    print("Initializing YOLOv8 Segmentation Trainer...")
+    trainer = DetectionTrainer(data_yaml=data_yaml, base_model="yolov8n-seg.pt")
     
     # Check if GPU is available
     import torch

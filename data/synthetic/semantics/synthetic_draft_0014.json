@@ -3,20 +3,38 @@
   "annotations": [
     {
       "bbox": [
-        157,
-        246,
-        312,
-        272
+        539,
+        594,
+        690,
+        620
       ],
-      "text": "Y32 125 B1",
+      "text": "Y32 250 T2",
       "semantic": {
-        "raw": "Y32 125 B1",
+        "raw": "Y32 250 T2",
         "bar_type": "Y",
         "diameter": 32,
-        "spacing": 125,
+        "spacing": 250,
+        "layer": "T",
+        "direction": 2,
+        "color": "teal"
+      }
+    },
+    {
+      "bbox": [
+        525,
+        130,
+        666,
+        156
+      ],
+      "text": "R8 250 B2",
+      "semantic": {
+        "raw": "R8 250 B2",
+        "bar_type": "R",
+        "diameter": 8,
+        "spacing": 250,
         "layer": "B",
-        "direction": 1,
-        "color": "orange"
+        "direction": 2,
+        "color": "magenta"
       }
     }
   ]

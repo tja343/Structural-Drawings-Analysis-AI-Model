@@ -3,7 +3,7 @@ from app.synthetic.export import Exporter
 from app.core.config import yaml_config
 
 def main():
-    num_samples = 100
+    num_samples = 200
     # Use path from config or default
     output_dir = yaml_config.get("paths", {}).get("data_synthetic", "data/synthetic")
     

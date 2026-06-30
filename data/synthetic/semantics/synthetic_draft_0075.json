@@ -3,19 +3,19 @@
   "annotations": [
     {
       "bbox": [
-        133,
-        78,
-        288,
-        104
+        302,
+        405,
+        481,
+        452
       ],
-      "text": "Y20 250 B1",
+      "text": "H10 175 T2",
       "semantic": {
-        "raw": "Y20 250 B1",
-        "bar_type": "Y",
-        "diameter": 20,
-        "spacing": 250,
-        "layer": "B",
-        "direction": 1,
+        "raw": "H10 175 T2",
+        "bar_type": "H",
+        "diameter": 10,
+        "spacing": 175,
+        "layer": "T",
+        "direction": 2,
         "color": "orange"
       }
     }

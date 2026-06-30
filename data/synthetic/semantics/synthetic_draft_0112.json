@@ -1,0 +1,59 @@
+{
+  "image_id": "synthetic_draft_0112",
+  "annotations": [
+    {
+      "bbox": [
+        578,
+        240,
+        751,
+        268
+      ],
+      "text": "H16 300 B1",
+      "semantic": {
+        "raw": "H16 300 B1",
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 300,
+        "layer": "B",
+        "direction": 1,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        221,
+        570,
+        388,
+        600
+      ],
+      "text": "Y20 250 B2",
+      "semantic": {
+        "raw": "Y20 250 B2",
+        "bar_type": "Y",
+        "diameter": 20,
+        "spacing": 250,
+        "layer": "B",
+        "direction": 2,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        101,
+        329,
+        266,
+        357
+      ],
+      "text": "H32 175 T1",
+      "semantic": {
+        "raw": "H32 175 T1",
+        "bar_type": "H",
+        "diameter": 32,
+        "spacing": 175,
+        "layer": "T",
+        "direction": 1,
+        "color": "magenta"
+      }
+    }
+  ]
+}

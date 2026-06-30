@@ -3,55 +3,19 @@
   "annotations": [
     {
       "bbox": [
-        154,
-        565,
-        303,
-        591
+        396,
+        271,
+        568,
+        304
       ],
-      "text": "T10 150 T2",
+      "text": "T8 125 B2",
       "semantic": {
-        "raw": "T10 150 T2",
+        "raw": "T8 125 B2",
         "bar_type": "T",
-        "diameter": 10,
-        "spacing": 150,
-        "layer": "T",
-        "direction": 2,
-        "color": "teal"
-      }
-    },
-    {
-      "bbox": [
-        554,
-        325,
-        707,
-        351
-      ],
-      "text": "T32 150 B2",
-      "semantic": {
-        "raw": "T32 150 B2",
-        "bar_type": "T",
-        "diameter": 32,
-        "spacing": 150,
+        "diameter": 8,
+        "spacing": 125,
         "layer": "B",
         "direction": 2,
-        "color": "magenta"
-      }
-    },
-    {
-      "bbox": [
-        311,
-        466,
-        465,
-        492
-      ],
-      "text": "H20 225 T1",
-      "semantic": {
-        "raw": "H20 225 T1",
-        "bar_type": "H",
-        "diameter": 20,
-        "spacing": 225,
-        "layer": "T",
-        "direction": 1,
         "color": "teal"
       }
     }

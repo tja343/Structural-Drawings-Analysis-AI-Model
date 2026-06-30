@@ -1,0 +1,23 @@
+{
+  "image_id": "synthetic_draft_0132",
+  "annotations": [
+    {
+      "bbox": [
+        555,
+        575,
+        708,
+        601
+      ],
+      "text": "R32 100 T1",
+      "semantic": {
+        "raw": "R32 100 T1",
+        "bar_type": "R",
+        "diameter": 32,
+        "spacing": 100,
+        "layer": "T",
+        "direction": 1,
+        "color": "blue"
+      }
+    }
+  ]
+}

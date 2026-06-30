@@ -1,0 +1,23 @@
+{
+  "image_id": "synthetic_draft_0109",
+  "annotations": [
+    {
+      "bbox": [
+        71,
+        552,
+        228,
+        578
+      ],
+      "text": "R32 150 B2",
+      "semantic": {
+        "raw": "R32 150 B2",
+        "bar_type": "R",
+        "diameter": 32,
+        "spacing": 150,
+        "layer": "B",
+        "direction": 2,
+        "color": "magenta"
+      }
+    }
+  ]
+}

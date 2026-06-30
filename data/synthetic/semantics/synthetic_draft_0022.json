@@ -3,56 +3,74 @@
   "annotations": [
     {
       "bbox": [
-        87,
-        673,
-        240,
-        699
+        477,
+        567,
+        614,
+        593
       ],
-      "text": "T25 150 B1",
+      "text": "T8 100 B1",
       "semantic": {
-        "raw": "T25 150 B1",
+        "raw": "T8 100 B1",
         "bar_type": "T",
+        "diameter": 8,
+        "spacing": 100,
+        "layer": "B",
+        "direction": 1,
+        "color": "magenta"
+      }
+    },
+    {
+      "bbox": [
+        371,
+        160,
+        524,
+        186
+      ],
+      "text": "T20 150 B2",
+      "semantic": {
+        "raw": "T20 150 B2",
+        "bar_type": "T",
+        "diameter": 20,
+        "spacing": 150,
+        "layer": "B",
+        "direction": 2,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        236,
+        509,
+        389,
+        535
+      ],
+      "text": "R10 175 T1",
+      "semantic": {
+        "raw": "R10 175 T1",
+        "bar_type": "R",
+        "diameter": 10,
+        "spacing": 175,
+        "layer": "T",
+        "direction": 1,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        293,
+        416,
+        450,
+        442
+      ],
+      "text": "R25 150 B2",
+      "semantic": {
+        "raw": "R25 150 B2",
+        "bar_type": "R",
         "diameter": 25,
         "spacing": 150,
         "layer": "B",
-        "direction": 1,
+        "direction": 2,
         "color": "blue"
-      }
-    },
-    {
-      "bbox": [
-        549,
-        305,
-        698,
-        331
-      ],
-      "text": "T12 150 T1",
-      "semantic": {
-        "raw": "T12 150 T1",
-        "bar_type": "T",
-        "diameter": 12,
-        "spacing": 150,
-        "layer": "T",
-        "direction": 1,
-        "color": "teal"
-      }
-    },
-    {
-      "bbox": [
-        217,
-        387,
-        374,
-        413
-      ],
-      "text": "R20 175 B1",
-      "semantic": {
-        "raw": "R20 175 B1",
-        "bar_type": "R",
-        "diameter": 20,
-        "spacing": 175,
-        "layer": "B",
-        "direction": 1,
-        "color": "violet"
       }
     }
   ]

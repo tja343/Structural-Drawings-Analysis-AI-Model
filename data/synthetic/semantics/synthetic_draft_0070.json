@@ -3,56 +3,74 @@
   "annotations": [
     {
       "bbox": [
-        468,
-        428,
-        625,
-        454
+        154,
+        223,
+        303,
+        249
       ],
-      "text": "R32 300 B2",
+      "text": "T16 175 T1",
       "semantic": {
-        "raw": "R32 300 B2",
-        "bar_type": "R",
-        "diameter": 32,
-        "spacing": 300,
-        "layer": "B",
-        "direction": 2,
-        "color": "magenta"
-      }
-    },
-    {
-      "bbox": [
-        230,
-        773,
-        388,
-        799
-      ],
-      "text": "H20 175 B1",
-      "semantic": {
-        "raw": "H20 175 B1",
-        "bar_type": "H",
-        "diameter": 20,
+        "raw": "T16 175 T1",
+        "bar_type": "T",
+        "diameter": 16,
         "spacing": 175,
-        "layer": "B",
+        "layer": "T",
         "direction": 1,
         "color": "teal"
       }
     },
     {
       "bbox": [
-        231,
-        427,
-        382,
-        453
+        518,
+        581,
+        671,
+        607
       ],
-      "text": "Y32 225 T1",
+      "text": "R20 125 T1",
       "semantic": {
-        "raw": "Y32 225 T1",
-        "bar_type": "Y",
-        "diameter": 32,
-        "spacing": 225,
+        "raw": "R20 125 T1",
+        "bar_type": "R",
+        "diameter": 20,
+        "spacing": 125,
         "layer": "T",
         "direction": 1,
-        "color": "magenta"
+        "color": "red"
+      }
+    },
+    {
+      "bbox": [
+        503,
+        354,
+        642,
+        380
+      ],
+      "text": "Y8 200 B1",
+      "semantic": {
+        "raw": "Y8 200 B1",
+        "bar_type": "Y",
+        "diameter": 8,
+        "spacing": 200,
+        "layer": "B",
+        "direction": 1,
+        "color": "violet"
+      }
+    },
+    {
+      "bbox": [
+        442,
+        65,
+        599,
+        91
+      ],
+      "text": "R16 300 B1",
+      "semantic": {
+        "raw": "R16 300 B1",
+        "bar_type": "R",
+        "diameter": 16,
+        "spacing": 300,
+        "layer": "B",
+        "direction": 1,
+        "color": "violet"
       }
     }
   ]

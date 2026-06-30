@@ -3,56 +3,74 @@
   "annotations": [
     {
       "bbox": [
-        96,
-        440,
-        249,
-        466
+        123,
+        581,
+        274,
+        607
       ],
-      "text": "T25 125 B1",
+      "text": "Y12 150 T2",
       "semantic": {
-        "raw": "T25 125 B1",
-        "bar_type": "T",
-        "diameter": 25,
-        "spacing": 125,
-        "layer": "B",
-        "direction": 1,
-        "color": "magenta"
+        "raw": "Y12 150 T2",
+        "bar_type": "Y",
+        "diameter": 12,
+        "spacing": 150,
+        "layer": "T",
+        "direction": 2,
+        "color": "violet"
       }
     },
     {
       "bbox": [
-        410,
-        507,
-        565,
-        533
+        117,
+        303,
+        271,
+        329
       ],
-      "text": "Y32 100 B1",
+      "text": "H25 100 T2",
       "semantic": {
-        "raw": "Y32 100 B1",
+        "raw": "H25 100 T2",
+        "bar_type": "H",
+        "diameter": 25,
+        "spacing": 100,
+        "layer": "T",
+        "direction": 2,
+        "color": "red"
+      }
+    },
+    {
+      "bbox": [
+        302,
+        585,
+        459,
+        611
+      ],
+      "text": "R10 100 B2",
+      "semantic": {
+        "raw": "R10 100 B2",
+        "bar_type": "R",
+        "diameter": 10,
+        "spacing": 100,
+        "layer": "B",
+        "direction": 2,
+        "color": "blue"
+      }
+    },
+    {
+      "bbox": [
+        572,
+        389,
+        727,
+        415
+      ],
+      "text": "Y10 100 B1",
+      "semantic": {
+        "raw": "Y10 100 B1",
         "bar_type": "Y",
-        "diameter": 32,
+        "diameter": 10,
         "spacing": 100,
         "layer": "B",
         "direction": 1,
         "color": "magenta"
-      }
-    },
-    {
-      "bbox": [
-        263,
-        664,
-        416,
-        690
-      ],
-      "text": "R12 125 T2",
-      "semantic": {
-        "raw": "R12 125 T2",
-        "bar_type": "R",
-        "diameter": 12,
-        "spacing": 125,
-        "layer": "T",
-        "direction": 2,
-        "color": "orange"
       }
     }
   ]
