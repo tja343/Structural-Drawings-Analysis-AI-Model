@@ -1,6 +1,7 @@
 fastapi
 httpx
 opencv-python-headless
+pillow
 pydantic
 pydantic-settings
 pytest

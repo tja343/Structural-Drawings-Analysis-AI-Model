@@ -83,20 +83,40 @@ def load_yolo_labels(path: Path) -> list[dict[str, Any]]:
         return rows
     for line in path.read_text(encoding="utf-8").splitlines():
         parts = line.split()
-        if len(parts) != 5:
+        if len(parts) < 5:
             continue
-        cls, xc, yc, width, height = parts
-        class_id = int(cls)
-        rows.append(
-            {
-                "class_id": class_id,
-                "class_name": CLASS_NAMES.get(class_id, str(class_id)),
-                "x_center": float(xc),
-                "y_center": float(yc),
-                "width": float(width),
-                "height": float(height),
-            }
-        )
+        class_id = int(parts[0])
+        if len(parts) == 5:
+            # Detection format: class x_center y_center width height
+            xc, yc, width, height = float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])
+            rows.append(
+                {
+                    "class_id": class_id,
+                    "class_name": CLASS_NAMES.get(class_id, str(class_id)),
+                    "x_center": xc,
+                    "y_center": yc,
+                    "width": width,
+                    "height": height,
+                }
+            )
+        else:
+            # Segmentation format: class x1 y1 x2 y2 ... xn yn
+            coords = [float(v) for v in parts[1:]]
+            xs = coords[0::2]
+            ys = coords[1::2]
+            x_min, x_max = min(xs), max(xs)
+            y_min, y_max = min(ys), max(ys)
+            rows.append(
+                {
+                    "class_id": class_id,
+                    "class_name": CLASS_NAMES.get(class_id, str(class_id)),
+                    "x_center": (x_min + x_max) / 2,
+                    "y_center": (y_min + y_max) / 2,
+                    "width": x_max - x_min,
+                    "height": y_max - y_min,
+                    "segmentation": list(zip(xs, ys)),
+                }
+            )
     return rows
 
 
