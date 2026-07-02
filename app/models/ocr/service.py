@@ -27,7 +27,7 @@ class OCRService:
             self.reader = easyocr.Reader([lang], gpu=self.use_gpu)
             self.backend = "easyocr"
         elif PaddleOCR is not None:
-            device = "gpu" if self.use_gpu else "cpu"
+            device = self._resolve_paddle_device()
             logger.info(f"Initializing PaddleOCR (Lang: {lang}, Device: {device})")
             self.ocr = PaddleOCR(
                 lang=lang,
@@ -40,6 +40,27 @@ class OCRService:
             self.backend = "paddleocr"
         else:
             raise ImportError("No OCR backend available. Install easyocr or paddleocr.")
+
+    def _resolve_paddle_device(self) -> str:
+        if not self.use_gpu:
+            return "cpu"
+
+        try:
+            import paddle
+
+            has_cuda = paddle.is_compiled_with_cuda()
+            device_count = paddle.device.cuda.device_count() if has_cuda else 0
+        except Exception as exc:
+            logger.warning(f"Could not inspect Paddle GPU support; using CPU for OCR: {exc}")
+            self.use_gpu = False
+            return "cpu"
+
+        if not has_cuda or device_count < 1:
+            logger.warning("Paddle GPU requested but unavailable; using CPU for OCR")
+            self.use_gpu = False
+            return "cpu"
+
+        return "gpu"
 
     def _extract_easyocr_results(self, ocr_result, scale: float = 1.0) -> List[Dict[str, Any]]:
         """Convert EasyOCR results to the standard format used by the pipeline."""

@@ -62,13 +62,12 @@ class InferenceOrchestrator:
         structural_regions = [d for d in detections if not self._is_text_detection(d)]
         text_regions = [d for d in detections if self._is_text_detection(d)]
         
-        logger.info(f"[{drawing_id}] Running full-image OCR")
-        ocr_results = self.ocr_service.process_full_image(model_image)
         if text_regions:
             logger.info(f"[{drawing_id}] Running OCR over {len(text_regions)} detected text regions")
-            ocr_results.extend(
-                self.ocr_service.process_image(model_image, [d["bbox"] for d in text_regions])
-            )
+            ocr_results = self.ocr_service.process_image(model_image, [d["bbox"] for d in text_regions])
+        else:
+            logger.info(f"[{drawing_id}] No detected text regions; running full-image OCR fallback")
+            ocr_results = self.ocr_service.process_full_image(model_image)
         
         logger.info(f"[{drawing_id}] Parsing engineering annotations")
         parsed_texts = []
