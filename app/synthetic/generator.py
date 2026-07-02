@@ -28,17 +28,8 @@ class DrawingGenerator:
         # Albumentations pipeline for domain randomization
         self.transform = None
         if A is not None:
-            compression_transform = (
-                A.ImageCompression(compression_type="jpeg", quality_range=(50, 100), p=0.4)
-                if hasattr(A, "ImageCompression")
-                else A.JpegCompression(quality_lower=50, quality_upper=100, p=0.4)
-            )
             self.transform = A.Compose([
-                A.GaussNoise(var_limit=(10.0, 50.0), p=0.5),
-                A.MotionBlur(blur_limit=5, p=0.3),
                 A.Perspective(scale=(0.01, 0.05), p=0.2),
-                A.RandomBrightnessContrast(p=0.5),
-                compression_transform,
             ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels']),
                keypoint_params=A.KeypointParams(format='xy', remove_invisible=False))
 

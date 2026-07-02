@@ -9,7 +9,7 @@ class EngineeringParser:
         # Format 3: Y16 TOP
         # Format 4: H12 200 T1
         
-        self.directional_spacing_pattern = re.compile(r"([A-Z])(\d+)\s+(\d+)\s+([TB])([12])", re.IGNORECASE)
+        self.directional_spacing_pattern = re.compile(r"([A-Z])(\d+)\s+(\d+)\s+([TB])([123])?", re.IGNORECASE)
         self.spacing_pattern = re.compile(r"([A-Z])(\d+)[@\-](\d+)", re.IGNORECASE)
         self.quantity_pattern = re.compile(r"(\d+)([A-Z])(\d+)", re.IGNORECASE)
         self.layer_pattern = re.compile(r"([A-Z])(\d+)\s+(TOP|BOTTOM|T|B)", re.IGNORECASE)
@@ -50,14 +50,14 @@ class EngineeringParser:
             "direction": None
         }
 
-        # Match Format 4: H12 200 T1
+        # Match Format 4: H12 200 T1, H12 200 B3, or H12 200 T
         match_directional_spacing = self.directional_spacing_pattern.match(corrected_text)
         if match_directional_spacing:
             result["bar_type"] = match_directional_spacing.group(1).upper()
             result["diameter"] = int(match_directional_spacing.group(2))
             result["spacing"] = int(match_directional_spacing.group(3))
             result["layer"] = match_directional_spacing.group(4).upper()
-            result["direction"] = int(match_directional_spacing.group(5))
+            result["direction"] = int(match_directional_spacing.group(5)) if match_directional_spacing.group(5) else None
             result["parsed"] = True
             return result
 

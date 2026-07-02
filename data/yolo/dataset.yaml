@@ -1,12 +1,8 @@
-path: data/yolo # dataset root dir when training is run from the project root
-train: train/images # train images
-val: val/images # val images
-test: test/images # test images
+path: ../data/yolo
+train: train/images
+val: val/images
+test: test/images
 
 names:
-  0: Text
-  1: Rebar Region
-  2: Arrow
-  3: Beam
-  4: Dimension
-  5: Support
+  0: shape
+  1: text

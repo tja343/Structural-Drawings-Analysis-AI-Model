@@ -19,8 +19,16 @@ class InferenceOrchestrator:
         self.detector = DetectionInference(weights_path=yolo_weights, conf_threshold=0.15)
         self.ocr_service = OCRService()
         self.parser = EngineeringParser()
-        self.spatial_engine = SpatialEngine(distance_threshold=150.0)
+        self.spatial_engine = SpatialEngine(distance_threshold=220.0)
         self.json_engine = JSONGeneratorEngine()
+
+    def _is_text_detection(self, detection: Dict[str, Any]) -> bool:
+        class_name = str(detection.get("class_name", "")).strip().lower()
+        if class_name == "text":
+            return True
+        if class_name in {"shape", "beam", "rebar_region", "rebar region", "arrow", "dimension", "support"}:
+            return False
+        return detection.get("class_id") == 1
 
     def _dedupe_detections(self, detections: List[Dict[str, Any]], iou_threshold: float = 0.35) -> List[Dict[str, Any]]:
         kept = []
@@ -51,16 +59,25 @@ class InferenceOrchestrator:
         logger.info(f"[{drawing_id}] Running object detection")
         detections = self._dedupe_detections(self.detector.predict(model_image))
         
-        structural_regions = [d for d in detections if d["class_id"] != 0]
+        structural_regions = [d for d in detections if not self._is_text_detection(d)]
+        text_regions = [d for d in detections if self._is_text_detection(d)]
         
         logger.info(f"[{drawing_id}] Running full-image OCR")
         ocr_results = self.ocr_service.process_full_image(model_image)
+        if text_regions:
+            logger.info(f"[{drawing_id}] Running OCR over {len(text_regions)} detected text regions")
+            ocr_results.extend(
+                self.ocr_service.process_image(model_image, [d["bbox"] for d in text_regions])
+            )
         
         logger.info(f"[{drawing_id}] Parsing engineering annotations")
         parsed_texts = []
         for ocr_res in ocr_results:
             raw_text = ocr_res["text"]
             parsed_data = self.parser.parse(raw_text)
+
+            if not raw_text:
+                continue
             
             parsed_texts.append({
                 "bbox": ocr_res["bbox"],

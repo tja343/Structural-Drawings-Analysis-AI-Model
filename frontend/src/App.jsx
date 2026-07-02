@@ -289,12 +289,16 @@ function Dataset({ samples, selectedSample, selectedSampleId, setSelectedSampleI
 
 function DataTable({ rows }) {
   if (!rows.length) return <div className="notice">No labels found for this sample.</div>;
+  const hasSource = rows.some((row) => row.source);
+  const hasText = rows.some((row) => row.text);
   return (
     <div className="tableWrap">
       <table>
         <thead>
           <tr>
             <th>Class</th>
+            {hasSource && <th>Source</th>}
+            {hasText && <th>Text</th>}
             <th>X Center</th>
             <th>Y Center</th>
             <th>Width</th>
@@ -305,6 +309,8 @@ function DataTable({ rows }) {
           {rows.map((row, index) => (
             <tr key={`${row.class_name}-${index}`}>
               <td>{row.class_name}</td>
+              {hasSource && <td>{row.source || "-"}</td>}
+              {hasText && <td>{row.text || "-"}</td>}
               <td>{row.x_center.toFixed(3)}</td>
               <td>{row.y_center.toFixed(3)}</td>
               <td>{row.width.toFixed(3)}</td>
@@ -318,14 +324,111 @@ function DataTable({ rows }) {
 }
 
 function Detection() {
+  return <DetectionWorkflow />;
+}
+
+function DetectionWorkflow() {
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [result, setResult] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const fileUrl = useMemo(() => {
+    if (!file) return "";
+    return URL.createObjectURL(file);
+  }, [file]);
+
+  useEffect(() => () => fileUrl && URL.revokeObjectURL(fileUrl), [fileUrl]);
+
+  function onFileChange(event) {
+    const nextFile = event.target.files?.[0];
+    setFile(nextFile || null);
+    setResult(null);
+    setMessage("");
+    setPreview(nextFile?.type?.startsWith("image/") ? URL.createObjectURL(nextFile) : null);
+  }
+
+  async function runDetection() {
+    if (!file) return;
+    setBusy(true);
+    setMessage("");
+    setResult(null);
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const res = await fetch(apiUrl("/api/v1/detect/image"), { method: "POST", body: form });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.detail || `HTTP ${res.status}`);
+      setResult(payload);
+    } catch (err) {
+      setMessage(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const formattedRows = result?.detections?.map((det) => {
+    const [x1, y1, x2, y2] = det.bbox;
+    return {
+      class_name: `${det.class_name} ${(det.confidence * 100).toFixed(0)}%`,
+      source: det.source || "yolo",
+      text: det.text || "",
+      x_center: (x1 + x2) / 2,
+      y_center: (y1 + y2) / 2,
+      width: x2 - x1,
+      height: y2 - y1,
+    };
+  }) || [];
+
   return (
-    <UploadWorkflow
-      title="Model Detection"
-      body="Upload a drawing image to preview the same color-isolation preprocessing and run the FastAPI image inference pipeline."
-      accept="image/png,image/jpeg"
-      endpoint="/api/v1/inference/image"
-      preprocess
-    />
+    <section className="uploadLayout">
+      <div className="uploadCard">
+        <span className="eyebrow"><ScanLine size={15} /> Detection workflow</span>
+        <h2>Model Detection</h2>
+        <p>Upload a drawing image to preview the color-isolation preprocessing and run the fast YOLO detector to draw bounding boxes and masks.</p>
+        <label className="dropZone">
+          <input type="file" accept="image/png,image/jpeg" onChange={onFileChange} />
+          <UploadCloud size={34} />
+          <strong>{file ? file.name : "Choose a drawing file"}</strong>
+          <span>image/png / image/jpeg</span>
+        </label>
+        <button className="primaryButton" onClick={runDetection} disabled={!file || busy}>
+          {busy ? <Loader2 className="spin" size={18} /> : <ScanLine size={18} />}
+          Run detection
+        </button>
+        {message && <div className="notice danger">{message}</div>}
+      </div>
+
+      <div className="previewStack">
+        {preview && !result && <img className="uploadedPreview" src={preview} alt="Uploaded drawing preview" />}
+        {result && (
+          <>
+            <div className="preprocessGrid">
+              <PreviewTile title="Original" src={result.original} />
+              <PreviewTile title="HSV mask" src={result.mask} />
+              <PreviewTile title="Cleaned" src={result.cleaned} />
+              <div className="retained">
+                <strong>{result.colored_pixel_count.toLocaleString()}</strong>
+                <span>colored pixels retained</span>
+                <em>{(result.retained_ratio * 100).toFixed(2)}%</em>
+              </div>
+            </div>
+            <div className="stageImage">
+              <img src={result.rendered} alt="YOLO detections" />
+            </div>
+            {result.summary && (
+              <div className="detectionSummary">
+                <span><strong>{result.summary.beams}</strong> beams</span>
+                <span><strong>{result.summary.text}</strong> text boxes</span>
+                <span><strong>{result.summary.ocr_text}</strong> OCR-added</span>
+              </div>
+            )}
+            <DataTable rows={formattedRows} />
+          </>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -442,7 +545,7 @@ function UploadWorkflow({ title, body, accept, endpoint, preprocess }) {
             </div>
           </div>
         )}
-        {result && <JsonBlock title="Inference Response" value={result} />}
+        {result && <InferenceResult value={result} />}
       </div>
     </section>
   );
@@ -462,6 +565,55 @@ function JsonBlock({ title, value }) {
     <section className="jsonBlock">
       <h3>{title}</h3>
       <pre>{JSON.stringify(value, null, 2)}</pre>
+    </section>
+  );
+}
+
+function InferenceResult({ value }) {
+  const data = value?.data || value;
+  const elements = data?.elements || [];
+  const summary = data?.summary || {};
+
+  return (
+    <section className="inferenceResult">
+      <div className="resultHeader">
+        <div>
+          <h3>Inference Response</h3>
+          <span>{data?.drawing_id || "uploaded drawing"}</span>
+        </div>
+        <div className="resultStats">
+          <strong>{summary.element_count ?? elements.length}</strong>
+          <span>elements</span>
+          <strong>{summary.annotation_count ?? elements.reduce((total, el) => total + (el.annotations?.length || 0), 0)}</strong>
+          <span>texts</span>
+        </div>
+      </div>
+
+      <div className="elementList">
+        {elements.length === 0 && <div className="notice">No structural elements were returned.</div>}
+        {elements.map((element, index) => (
+          <article className="elementRow" key={element.id || index}>
+            <div className="elementMeta">
+              <strong>{element.id || `${element.type}_${index + 1}`}</strong>
+              <span>{element.type}</span>
+              <em>{Math.round((element.detection_confidence || 0) * 100)}%</em>
+            </div>
+            <div className="annotationList">
+              {(element.annotations || []).length === 0 && <span className="emptyAnnotation">No associated text</span>}
+              {(element.annotations || []).map((ann, annIndex) => (
+                <div className="annotationPill" key={`${ann.text}-${annIndex}`}>
+                  <strong>{ann.normalized_text || ann.text}</strong>
+                  <span>
+                    Dia {ann.parsed?.diameter ?? "-"} · Spacing {ann.parsed?.spacing ?? "-"} · Layer {ann.parsed?.layer ?? "-"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <JsonBlock title="Raw JSON" value={value} />
     </section>
   );
 }

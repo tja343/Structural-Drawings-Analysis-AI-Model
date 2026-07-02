@@ -2,7 +2,7 @@ from fastapi import APIRouter, File, UploadFile, HTTPException, Response
 from app.schemas.api import InferenceResponse, BatchInferenceResponse
 from app.core.logger import logger
 from app.preprocessing.color_isolation import isolate_colored_annotations
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 from typing import Any
 import base64
@@ -15,6 +15,7 @@ import numpy as np
 router = APIRouter()
 _orchestrator = None
 _pdf_processor = None
+_ocr_service = None
 
 ROOT = Path(__file__).resolve().parents[2]
 SYNTHETIC_DIR = ROOT / "data" / "synthetic"
@@ -23,8 +24,8 @@ YOLO_DIR = ROOT / "data" / "yolo"
 TRAINED_WEIGHTS = ROOT / "models" / "yolov8_custom.pt"
 RUN_WEIGHTS = ROOT / "runs" / "detect" / "train_run" / "weights" / "best.pt"
 CLASS_NAMES = {
-    0: "Text",
-    1: "Rebar Region",
+    0: "Shape",
+    1: "Text",
     2: "Arrow",
     3: "Beam",
     4: "Dimension",
@@ -37,6 +38,12 @@ PREVIEW_COLORS = {
     3: "#38bdf8",
     4: "#a78bfa",
     5: "#fb7185",
+}
+
+DETECTION_CLASS_ALIASES = {
+    "shape": "Beam",
+    "beam": "Beam",
+    "text": "Text",
 }
 
 
@@ -58,6 +65,15 @@ def get_pdf_processor():
     return _pdf_processor
 
 
+def get_ocr_service():
+    global _ocr_service
+    if _ocr_service is None:
+        from app.models.ocr.service import OCRService
+
+        _ocr_service = OCRService()
+    return _ocr_service
+
+
 def count_files(path: Path, pattern: str) -> int:
     return len(list(path.glob(pattern))) if path.exists() else 0
 
@@ -67,7 +83,104 @@ def get_weight_path() -> Path | None:
         return TRAINED_WEIGHTS
     if RUN_WEIGHTS.exists():
         return RUN_WEIGHTS
+    nested = ROOT / "runs" / "detect" / "runs" / "detect" / "train_run" / "weights" / "best.pt"
+    if nested.exists():
+        return nested
     return None
+
+
+def normalize_detection_name(detection: dict[str, Any]) -> dict[str, Any]:
+    class_name = str(detection.get("class_name", "")).strip()
+    display_name = DETECTION_CLASS_ALIASES.get(class_name.lower(), class_name or str(detection.get("class_id", "")))
+    return {
+        **detection,
+        "class_name": display_name,
+        "source": detection.get("source", "yolo"),
+    }
+
+
+def draw_detection_overlay(image: np.ndarray, detections: list[dict[str, Any]]) -> np.ndarray:
+    out_img = image.copy()
+    colors = {
+        "Beam": (56, 189, 248),
+        "Text": (236, 72, 153),
+    }
+    for det in detections:
+        x1, y1, x2, y2 = [int(v) for v in det["bbox"]]
+        name = det.get("class_name", "Detection")
+        source = det.get("source", "yolo")
+        conf = float(det.get("confidence", 0.0))
+        color = colors.get(name, (34, 197, 94))
+        cv2.rectangle(out_img, (x1, y1), (x2, y2), color, 2)
+        label = f"{name} {conf:.2f}" if source == "yolo" else f"OCR text {conf:.2f}"
+        if det.get("text"):
+            label = f"{label}: {det['text']}"
+        cv2.putText(out_img, label, (x1, max(14, y1 - 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.48, color, 2)
+    return out_img
+
+
+def calculate_iou_local(bbox1: list[int], bbox2: list[int]) -> float:
+    x_left = max(bbox1[0], bbox2[0])
+    y_top = max(bbox1[1], bbox2[1])
+    x_right = min(bbox1[2], bbox2[2])
+    y_bottom = min(bbox1[3], bbox2[3])
+    if x_right <= x_left or y_bottom <= y_top:
+        return 0.0
+    intersection = (x_right - x_left) * (y_bottom - y_top)
+    area1 = (bbox1[2] - bbox1[0]) * (bbox1[3] - bbox1[1])
+    area2 = (bbox2[2] - bbox2[0]) * (bbox2[3] - bbox2[1])
+    return intersection / float(area1 + area2 - intersection)
+
+
+def merge_text_detections(yolo_detections: list[dict[str, Any]], ocr_detections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    merged = list(yolo_detections)
+    yolo_text_boxes = [
+        d["bbox"] for d in yolo_detections
+        if str(d.get("class_name", "")).lower() == "text"
+    ]
+    for item in ocr_detections:
+        if not item.get("text"):
+            continue
+        bbox = item["bbox"]
+        if any(calculate_iou_local(bbox, existing) > 0.35 for existing in yolo_text_boxes):
+            continue
+        merged.append({
+            "bbox": bbox,
+            "confidence": item.get("confidence", 0.0),
+            "class_id": 1,
+            "class_name": "Text",
+            "source": "ocr",
+            "text": item.get("text", ""),
+        })
+    return merged
+
+
+def bbox_area(bbox: list[int]) -> float:
+    return max(0, bbox[2] - bbox[0]) * max(0, bbox[3] - bbox[1])
+
+
+def suppress_duplicate_detections(detections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    kept: list[dict[str, Any]] = []
+    for det in sorted(detections, key=lambda item: item.get("confidence", 0.0), reverse=True):
+        det_bbox = det["bbox"]
+        det_area = bbox_area(det_bbox)
+        duplicate = False
+        for existing in kept:
+            if det.get("class_name") != existing.get("class_name"):
+                continue
+            iou = calculate_iou_local(det_bbox, existing["bbox"])
+            x_left = max(det_bbox[0], existing["bbox"][0])
+            y_top = max(det_bbox[1], existing["bbox"][1])
+            x_right = min(det_bbox[2], existing["bbox"][2])
+            y_bottom = min(det_bbox[3], existing["bbox"][3])
+            intersection = max(0, x_right - x_left) * max(0, y_bottom - y_top)
+            containment = intersection / det_area if det_area else 0
+            if iou > 0.55 or containment > 0.82:
+                duplicate = True
+                break
+        if not duplicate:
+            kept.append(det)
+    return kept
 
 
 def source_roots() -> list[tuple[str, str, Path]]:
@@ -280,6 +393,58 @@ async def preprocess_image_upload(file: UploadFile = File(...)):
         "mask": data_url_from_array(cv2.cvtColor(result.color_mask, cv2.COLOR_GRAY2BGR)),
         "cleaned": data_url_from_array(result.cleaned),
     }
+
+
+@router.post("/detect/image")
+async def detect_image_upload(file: UploadFile = File(...), include_ocr: bool = False):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if image is None:
+        raise HTTPException(status_code=400, detail="Invalid image file")
+
+    # 1. Color Isolation
+    result = isolate_colored_annotations(image)
+    
+    # 2. Inference
+    weight_path = get_weight_path()
+    if weight_path is None:
+        raise HTTPException(status_code=400, detail="No trained weights found")
+        
+    from app.models.detection.inference import DetectionInference
+    detector = DetectionInference(str(weight_path), conf_threshold=0.15)
+    yolo_predictions = [normalize_detection_name(item) for item in detector.predict(result.cleaned)]
+    if include_ocr:
+        try:
+            ocr_predictions = get_ocr_service().process_full_image(result.cleaned)
+        except Exception as exc:
+            logger.warning(f"OCR augmentation skipped for detection endpoint: {exc}")
+            ocr_predictions = []
+    else:
+        ocr_predictions = []
+    predictions = suppress_duplicate_detections(merge_text_detections(yolo_predictions, ocr_predictions))
+    rendered = draw_detection_overlay(result.cleaned, predictions)
+    
+    return {
+        "colored_pixel_count": int(result.colored_pixel_count),
+        "retained_ratio": float(result.retained_ratio),
+        "original": data_url_from_array(image),
+        "mask": data_url_from_array(cv2.cvtColor(result.color_mask, cv2.COLOR_GRAY2BGR)),
+        "cleaned": data_url_from_array(result.cleaned),
+        "rendered": data_url_from_array(rendered),
+        "detections": predictions,
+        "summary": {
+            "total": len(predictions),
+            "beams": sum(1 for item in predictions if item.get("class_name") == "Beam"),
+            "text": sum(1 for item in predictions if item.get("class_name") == "Text"),
+            "ocr_text": sum(1 for item in predictions if item.get("source") == "ocr"),
+            "weights": str(weight_path),
+        },
+    }
+
 
 @router.post("/inference/image", response_model=InferenceResponse)
 async def process_image_upload(file: UploadFile = File(...)):

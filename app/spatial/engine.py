@@ -1,9 +1,9 @@
 from typing import List, Dict, Any
-from app.spatial.geometry import euclidean_distance, calculate_iou
+from app.spatial.geometry import bbox_edge_distance, calculate_iou
 from app.core.logger import logger
 
 class SpatialEngine:
-    def __init__(self, distance_threshold: float = 150.0):
+    def __init__(self, distance_threshold: float = 220.0):
         self.distance_threshold = distance_threshold
 
     def associate_text_to_regions(
@@ -40,8 +40,9 @@ class SpatialEngine:
                     min_dist = 0 # Overlap takes maximum priority
                     break
                     
-                # Otherwise, use nearest neighbor via Centroid Euclidean Distance
-                dist = euclidean_distance(text_bbox, region_bbox)
+                # Otherwise, use nearest edge distance. Text labels are often
+                # placed beside long beams, where centroid distance is misleading.
+                dist = bbox_edge_distance(text_bbox, region_bbox)
                 if dist < min_dist and dist < self.distance_threshold:
                     min_dist = dist
                     best_region = region

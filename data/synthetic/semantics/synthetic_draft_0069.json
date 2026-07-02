@@ -1,23 +1,116 @@
 {
+  "schema_version": "1.1",
   "image_id": "synthetic_draft_0069",
+  "summary": {
+    "element_count": 2,
+    "annotation_count": 2
+  },
+  "elements": [
+    {
+      "id": "beam_001",
+      "type": "beam",
+      "shape_type": "stairs",
+      "bbox": [
+        606,
+        546,
+        808,
+        686
+      ],
+      "color": "#dc1e1e",
+      "annotations": [
+        {
+          "id": "text_001",
+          "bbox": [
+            821,
+            600,
+            1011,
+            632
+          ],
+          "text": "H16 300 B",
+          "semantic": {
+            "raw": "H16 300 B",
+            "bar_type": "H",
+            "diameter": 16,
+            "spacing": 300,
+            "layer": "B",
+            "direction": null,
+            "color": "#dc1e1e"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beam_002",
+      "type": "beam",
+      "shape_type": "rectangle",
+      "bbox": [
+        201,
+        152,
+        385,
+        373
+      ],
+      "color": "#dc1e1e",
+      "annotations": [
+        {
+          "id": "text_002",
+          "bbox": [
+            398,
+            247,
+            577,
+            278
+          ],
+          "text": "H12 150 T",
+          "semantic": {
+            "raw": "H12 150 T",
+            "bar_type": "H",
+            "diameter": 12,
+            "spacing": 150,
+            "layer": "T",
+            "direction": null,
+            "color": "#dc1e1e"
+          }
+        }
+      ]
+    }
+  ],
   "annotations": [
     {
       "bbox": [
-        159,
-        573,
-        312,
-        599
+        821,
+        600,
+        1011,
+        632
       ],
-      "text": "R20 250 T1",
+      "text": "H16 300 B",
       "semantic": {
-        "raw": "R20 250 T1",
-        "bar_type": "R",
-        "diameter": 20,
-        "spacing": 250,
+        "raw": "H16 300 B",
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 300,
+        "layer": "B",
+        "direction": null,
+        "color": "#dc1e1e"
+      },
+      "associated_element_id": "beam_001"
+    },
+    {
+      "bbox": [
+        398,
+        247,
+        577,
+        278
+      ],
+      "text": "H12 150 T",
+      "semantic": {
+        "raw": "H12 150 T",
+        "bar_type": "H",
+        "diameter": 12,
+        "spacing": 150,
         "layer": "T",
-        "direction": 1,
-        "color": "red"
-      }
+        "direction": null,
+        "color": "#dc1e1e"
+      },
+      "associated_element_id": "beam_002"
     }
   ]
 }

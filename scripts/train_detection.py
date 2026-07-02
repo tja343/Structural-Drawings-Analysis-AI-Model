@@ -1,6 +1,7 @@
 import sys
 import argparse
 from pathlib import Path
+import shutil
 
 from app.models.detection.train import DetectionTrainer
 
@@ -17,10 +18,7 @@ def main():
         print(f"Error: {data_yaml} not found. Please run python -m scripts.prepare_dataset first.")
         sys.exit(1)
         
-    print("Initializing YOLOv8 Segmentation Trainer...")
-    trainer = DetectionTrainer(data_yaml=data_yaml, base_model="yolov8n-seg.pt")
-    
-    # Check if GPU is available
+    trainer = DetectionTrainer(data_yaml=data_yaml, base_model="yolov8n.pt")
     import torch
     device = "0" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
@@ -31,6 +29,13 @@ def main():
         batch=args.batch,
         device=device
     )
+
+    best_weights = Path("runs/detect/train_run/weights/best.pt")
+    if best_weights.exists():
+        model_path = Path("models/yolov8_custom.pt")
+        model_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(best_weights, model_path)
+        print(f"Copied trained weights to {model_path}")
 
 if __name__ == "__main__":
     main()

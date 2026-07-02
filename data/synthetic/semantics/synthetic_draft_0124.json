@@ -1,59 +1,168 @@
 {
+  "schema_version": "1.1",
   "image_id": "synthetic_draft_0124",
+  "summary": {
+    "element_count": 3,
+    "annotation_count": 3
+  },
+  "elements": [
+    {
+      "id": "beam_001",
+      "type": "beam",
+      "shape_type": "rectangle",
+      "bbox": [
+        380,
+        110,
+        690,
+        238
+      ],
+      "color": "#dc1e1e",
+      "annotations": [
+        {
+          "id": "text_001",
+          "bbox": [
+            702,
+            159,
+            902,
+            190
+          ],
+          "text": "H10 125 T1",
+          "semantic": {
+            "raw": "H10 125 T1",
+            "bar_type": "H",
+            "diameter": 10,
+            "spacing": 125,
+            "layer": "T",
+            "direction": 1,
+            "color": "#dc1e1e"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beam_002",
+      "type": "beam",
+      "shape_type": "rectangle",
+      "bbox": [
+        81,
+        627,
+        252,
+        747
+      ],
+      "color": "#1e46dc",
+      "annotations": [
+        {
+          "id": "text_002",
+          "bbox": [
+            265,
+            675,
+            403,
+            698
+          ],
+          "text": "H13 175 B2",
+          "semantic": {
+            "raw": "H13 175 B2",
+            "bar_type": "H",
+            "diameter": 13,
+            "spacing": 175,
+            "layer": "B",
+            "direction": 2,
+            "color": "#1e46dc"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beam_003",
+      "type": "beam",
+      "shape_type": "stairs",
+      "bbox": [
+        566,
+        256,
+        738,
+        398
+      ],
+      "color": "#1e46dc",
+      "annotations": [
+        {
+          "id": "text_003",
+          "bbox": [
+            751,
+            316,
+            886,
+            338
+          ],
+          "text": "H25 125 T2",
+          "semantic": {
+            "raw": "H25 125 T2",
+            "bar_type": "H",
+            "diameter": 25,
+            "spacing": 125,
+            "layer": "T",
+            "direction": 2,
+            "color": "#1e46dc"
+          }
+        }
+      ]
+    }
+  ],
   "annotations": [
     {
       "bbox": [
-        602,
-        460,
-        809,
-        490
+        702,
+        159,
+        902,
+        190
       ],
-      "text": "Y32 250 B1",
+      "text": "H10 125 T1",
       "semantic": {
-        "raw": "Y32 250 B1",
-        "bar_type": "Y",
-        "diameter": 32,
-        "spacing": 250,
-        "layer": "B",
+        "raw": "H10 125 T1",
+        "bar_type": "H",
+        "diameter": 10,
+        "spacing": 125,
+        "layer": "T",
         "direction": 1,
-        "color": "red"
-      }
+        "color": "#dc1e1e"
+      },
+      "associated_element_id": "beam_001"
     },
     {
       "bbox": [
-        285,
-        219,
-        502,
-        252
+        265,
+        675,
+        403,
+        698
       ],
-      "text": "Y20 175 B1",
+      "text": "H13 175 B2",
       "semantic": {
-        "raw": "Y20 175 B1",
-        "bar_type": "Y",
-        "diameter": 20,
+        "raw": "H13 175 B2",
+        "bar_type": "H",
+        "diameter": 13,
         "spacing": 175,
         "layer": "B",
-        "direction": 1,
-        "color": "red"
-      }
+        "direction": 2,
+        "color": "#1e46dc"
+      },
+      "associated_element_id": "beam_002"
     },
     {
       "bbox": [
-        155,
-        564,
-        367,
-        595
+        751,
+        316,
+        886,
+        338
       ],
-      "text": "R25 250 B1",
+      "text": "H25 125 T2",
       "semantic": {
-        "raw": "R25 250 B1",
-        "bar_type": "R",
+        "raw": "H25 125 T2",
+        "bar_type": "H",
         "diameter": 25,
-        "spacing": 250,
-        "layer": "B",
-        "direction": 1,
-        "color": "violet"
-      }
+        "spacing": 125,
+        "layer": "T",
+        "direction": 2,
+        "color": "#1e46dc"
+      },
+      "associated_element_id": "beam_003"
     }
   ]
 }

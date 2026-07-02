@@ -12,7 +12,8 @@ class JSONGeneratorEngine:
     def __init__(self):
         # Maps YOLO class IDs to human readable types
         self.class_map = {
-            1: "rebar_region",
+            0: "beam",
+            1: "text",
             2: "arrow",
             3: "beam",
             4: "dimension",
@@ -42,11 +43,15 @@ class JSONGeneratorEngine:
         
         for r in regions:
             class_id = r["class_id"]
-            if class_id == 0:
-                continue # Skip raw floating text that wasn't associated
-                
+            class_name = str(r.get("class_name", "")).strip().lower()
             element_type = self.class_map.get(class_id, "unknown")
+            if class_name == "shape":
+                element_type = "beam"
+            elif class_name and class_name != "text":
+                element_type = class_name.replace(" ", "_")
             r_bbox = r["bbox"]
+            if element_type == "text":
+                continue
             
             annotations = []
             for ann in r.get("annotations", []):
@@ -66,6 +71,7 @@ class JSONGeneratorEngine:
                 annotation = AnnotationSchema(
                     bbox=BoundingBoxSchema(x1=ann_bbox[0], y1=ann_bbox[1], x2=ann_bbox[2], y2=ann_bbox[3]),
                     text=ann.get("text", ""),
+                    normalized_text=parsed_data.get("corrected") or ann.get("text", ""),
                     parsed=semantic,
                     ocr_confidence=ann.get("confidence", 0.0),
                     association_confidence=ann.get("association_confidence", 0.0)
@@ -73,7 +79,10 @@ class JSONGeneratorEngine:
                 annotations.append(annotation)
                 
             element = StructuralElementSchema(
+                id=f"{element_type}_{len(elements) + 1:03d}",
                 type=element_type,
+                class_id=class_id,
+                class_name=r.get("class_name"),
                 bbox=BoundingBoxSchema(x1=r_bbox[0], y1=r_bbox[1], x2=r_bbox[2], y2=r_bbox[3]),
                 detection_confidence=r.get("confidence", 0.0),
                 annotations=annotations
@@ -83,8 +92,14 @@ class JSONGeneratorEngine:
         overall_conf = self._calculate_overall_confidence(elements)
         
         output = EngineeringOutputSchema(
+            schema_version="1.1",
             drawing_id=drawing_id,
             overall_confidence=overall_conf,
+            summary={
+                "element_count": len(elements),
+                "annotation_count": sum(len(el.annotations) for el in elements),
+                "annotated_element_count": sum(1 for el in elements if el.annotations),
+            },
             elements=elements
         )
         

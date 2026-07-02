@@ -10,7 +10,7 @@ except ImportError:
     mlflow = None
 
 class DetectionTrainer:
-    def __init__(self, data_yaml: str, base_model: str = "yolov8n-seg.pt", project_name: str = "structural_ai_segmentation"):
+    def __init__(self, data_yaml: str, base_model: str = "yolov8n.pt", project_name: str = "structural_ai_detection"):
         self.data_yaml = str(Path(data_yaml).absolute())
         self.base_model = base_model
         self.project_name = project_name
@@ -19,15 +19,21 @@ class DetectionTrainer:
     def train(self, epochs: int = 100, imgsz: int = 640, batch: int = 16, device: str = "0"):
         logger.info(f"Starting YOLOv8 training for {epochs} epochs on device {device}")
         
-        if mlflow is not None:
-            mlflow.set_experiment(self.project_name)
-            run_context = mlflow.start_run()
+        active_mlflow = mlflow
+        if active_mlflow is not None:
+            try:
+                active_mlflow.set_experiment(self.project_name)
+                run_context = active_mlflow.start_run()
+            except Exception as exc:
+                logger.warning(f"MLflow logging disabled: {exc}")
+                active_mlflow = None
+                run_context = None
         else:
             run_context = None
 
         with run_context if run_context is not None else nullcontext():
-            if mlflow is not None:
-                mlflow.log_params({
+            if active_mlflow is not None:
+                active_mlflow.log_params({
                     "epochs": epochs,
                     "imgsz": imgsz,
                     "batch": batch,
@@ -40,7 +46,7 @@ class DetectionTrainer:
                 imgsz=imgsz,
                 batch=batch,
                 device=device,
-                project="runs/segment",
+                project=str(Path("runs/detect").absolute()),
                 name="train_run",
                 exist_ok=True,
                 save=True,
@@ -50,11 +56,11 @@ class DetectionTrainer:
                 plots=False
             )
 
-            if mlflow is not None:
-                mlflow.log_metrics({
-                    "map50": getattr(results, "seg", results.box).map50,
-                    "map": getattr(results, "seg", results.box).map
+            if active_mlflow is not None:
+                active_mlflow.log_metrics({
+                    "map50": results.box.map50,
+                    "map": results.box.map
                 })
 
-            logger.info("Training complete. Models saved to runs/segment/train_run/weights/")
+            logger.info("Training complete. Models saved to runs/detect/train_run/weights/")
         return results

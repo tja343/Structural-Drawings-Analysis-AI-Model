@@ -10,6 +10,15 @@ def euclidean_distance(bbox1: List[int], bbox2: List[int]) -> float:
     cx2, cy2 = get_centroid(bbox2)
     return math.sqrt((cx2 - cx1)**2 + (cy2 - cy1)**2)
 
+def bbox_edge_distance(bbox1: List[int], bbox2: List[int]) -> float:
+    """Shortest pixel distance between two axis-aligned boxes; 0 when touching/overlapping."""
+    ax1, ay1, ax2, ay2 = bbox1
+    bx1, by1, bx2, by2 = bbox2
+
+    dx = max(bx1 - ax2, ax1 - bx2, 0)
+    dy = max(by1 - ay2, ay1 - by2, 0)
+    return math.sqrt(dx**2 + dy**2)
+
 def calculate_iou(bbox1: List[int], bbox2: List[int]) -> float:
     """Calculate Intersection over Union (IoU) of two bounding boxes."""
     x_left = max(bbox1[0], bbox2[0])

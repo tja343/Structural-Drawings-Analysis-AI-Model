@@ -1,77 +1,220 @@
 {
+  "schema_version": "1.1",
   "image_id": "synthetic_draft_0177",
+  "summary": {
+    "element_count": 4,
+    "annotation_count": 4
+  },
+  "elements": [
+    {
+      "id": "beam_001",
+      "type": "beam",
+      "shape_type": "l_shape",
+      "bbox": [
+        9,
+        591,
+        243,
+        741
+      ],
+      "color": "#1e46dc",
+      "annotations": [
+        {
+          "id": "text_001",
+          "bbox": [
+            256,
+            654,
+            389,
+            678
+          ],
+          "text": "H20 250 B",
+          "semantic": {
+            "raw": "H20 250 B",
+            "bar_type": "H",
+            "diameter": 20,
+            "spacing": 250,
+            "layer": "B",
+            "direction": null,
+            "color": "#1e46dc"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beam_002",
+      "type": "beam",
+      "shape_type": "rectangle",
+      "bbox": [
+        682,
+        383,
+        834,
+        495
+      ],
+      "color": "#dc1e1e",
+      "annotations": [
+        {
+          "id": "text_002",
+          "bbox": [
+            848,
+            424,
+            1020,
+            454
+          ],
+          "text": "H16 150 T",
+          "semantic": {
+            "raw": "H16 150 T",
+            "bar_type": "H",
+            "diameter": 16,
+            "spacing": 150,
+            "layer": "T",
+            "direction": null,
+            "color": "#dc1e1e"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beam_003",
+      "type": "beam",
+      "shape_type": "rectangle",
+      "bbox": [
+        574,
+        108,
+        873,
+        245
+      ],
+      "color": "#dc1e1e",
+      "annotations": [
+        {
+          "id": "text_003",
+          "bbox": [
+            884,
+            166,
+            996,
+            187
+          ],
+          "text": "H25 150 T",
+          "semantic": {
+            "raw": "H25 150 T",
+            "bar_type": "H",
+            "diameter": 25,
+            "spacing": 150,
+            "layer": "T",
+            "direction": null,
+            "color": "#dc1e1e"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beam_004",
+      "type": "beam",
+      "shape_type": "l_shape",
+      "bbox": [
+        282,
+        14,
+        449,
+        125
+      ],
+      "color": "#dc1e1e",
+      "annotations": [
+        {
+          "id": "text_004",
+          "bbox": [
+            463,
+            59,
+            591,
+            80
+          ],
+          "text": "H25 300 T2",
+          "semantic": {
+            "raw": "H25 300 T2",
+            "bar_type": "H",
+            "diameter": 25,
+            "spacing": 300,
+            "layer": "T",
+            "direction": 2,
+            "color": "#dc1e1e"
+          }
+        }
+      ]
+    }
+  ],
   "annotations": [
     {
       "bbox": [
-        68,
-        230,
-        203,
-        256
+        256,
+        654,
+        389,
+        678
       ],
-      "text": "Y8 125 T2",
+      "text": "H20 250 B",
       "semantic": {
-        "raw": "Y8 125 T2",
-        "bar_type": "Y",
-        "diameter": 8,
-        "spacing": 125,
-        "layer": "T",
-        "direction": 2,
-        "color": "red"
-      }
-    },
-    {
-      "bbox": [
-        518,
-        116,
-        667,
-        142
-      ],
-      "text": "T12 100 T1",
-      "semantic": {
-        "raw": "T12 100 T1",
-        "bar_type": "T",
-        "diameter": 12,
-        "spacing": 100,
-        "layer": "T",
-        "direction": 1,
-        "color": "orange"
-      }
-    },
-    {
-      "bbox": [
-        300,
-        299,
-        457,
-        325
-      ],
-      "text": "R16 100 B2",
-      "semantic": {
-        "raw": "R16 100 B2",
-        "bar_type": "R",
-        "diameter": 16,
-        "spacing": 100,
-        "layer": "B",
-        "direction": 2,
-        "color": "red"
-      }
-    },
-    {
-      "bbox": [
-        188,
-        568,
-        346,
-        594
-      ],
-      "text": "H32 125 B2",
-      "semantic": {
-        "raw": "H32 125 B2",
+        "raw": "H20 250 B",
         "bar_type": "H",
-        "diameter": 32,
-        "spacing": 125,
+        "diameter": 20,
+        "spacing": 250,
         "layer": "B",
+        "direction": null,
+        "color": "#1e46dc"
+      },
+      "associated_element_id": "beam_001"
+    },
+    {
+      "bbox": [
+        848,
+        424,
+        1020,
+        454
+      ],
+      "text": "H16 150 T",
+      "semantic": {
+        "raw": "H16 150 T",
+        "bar_type": "H",
+        "diameter": 16,
+        "spacing": 150,
+        "layer": "T",
+        "direction": null,
+        "color": "#dc1e1e"
+      },
+      "associated_element_id": "beam_002"
+    },
+    {
+      "bbox": [
+        884,
+        166,
+        996,
+        187
+      ],
+      "text": "H25 150 T",
+      "semantic": {
+        "raw": "H25 150 T",
+        "bar_type": "H",
+        "diameter": 25,
+        "spacing": 150,
+        "layer": "T",
+        "direction": null,
+        "color": "#dc1e1e"
+      },
+      "associated_element_id": "beam_003"
+    },
+    {
+      "bbox": [
+        463,
+        59,
+        591,
+        80
+      ],
+      "text": "H25 300 T2",
+      "semantic": {
+        "raw": "H25 300 T2",
+        "bar_type": "H",
+        "diameter": 25,
+        "spacing": 300,
+        "layer": "T",
         "direction": 2,
-        "color": "violet"
-      }
+        "color": "#dc1e1e"
+      },
+      "associated_element_id": "beam_004"
     }
   ]
 }

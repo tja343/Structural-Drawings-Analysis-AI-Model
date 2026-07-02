@@ -24,6 +24,11 @@ def prepare_splits(source_dir: Path, out_dir: Path, train_ratio=0.8, val_ratio=0
         "val": images[train_split:val_split],
         "test": images[val_split:]
     }
+
+    for split in splits:
+        split_dir = out_dir / split
+        if split_dir.exists():
+            shutil.rmtree(split_dir)
     
     for split, files in splits.items():
         split_img_dir = out_dir / split / "images"
