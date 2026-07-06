@@ -36,15 +36,48 @@ class DetectionInference:
                 conf = box.conf[0].item()
                 cls_id = int(box.cls[0].item())
                 
+                width = int(x2 - x1)
+                height = int(y2 - y1)
+                x_center = int(x1 + width / 2)
+                y_center = int(y1 + height / 2)
+
                 det = {
                     "bbox": [int(x1), int(y1), int(x2), int(y2)],
                     "confidence": float(conf),
                     "class_id": cls_id,
-                    "class_name": result.names[cls_id]
+                    "class_name": result.names[cls_id],
+                    "x_center": x_center,
+                    "y_center": y_center,
+                    "width": width,
+                    "height": height,
                 }
                 
                 if masks is not None and masks.xy and len(masks.xy) > i:
-                    det["segmentation"] = masks.xy[i].tolist()
+                    seg_points = masks.xy[i]
+                    det["segmentation"] = seg_points.tolist()
+                    
+                    # Convert to integer contour array required by OpenCV
+                    contour = np.array(seg_points, dtype=np.int32)
+                    
+                    # Calculate perimeter
+                    perimeter = cv2.arcLength(contour, True)
+                    
+                    # Set epsilon to 2% of the perimeter (you can adjust this factor if needed)
+                    epsilon = 0.02 * perimeter
+                    
+                    # Approximate the polygon to find corners
+                    approx = cv2.approxPolyDP(contour, epsilon, True)
+                    
+                    # Reshape to a simple list of [x, y] coordinates
+                    det["corners"] = approx.reshape(-1, 2).tolist()
+                else:
+                    # Fallback to bounding box corners if no segmentation mask is available
+                    det["corners"] = [
+                        [int(x1), int(y1)],
+                        [int(x2), int(y1)],
+                        [int(x2), int(y2)],
+                        [int(x1), int(y2)]
+                    ]
                 
                 detections.append(det)
                 
