@@ -291,6 +291,7 @@ function DataTable({ rows }) {
   if (!rows.length) return <div className="notice">No labels found for this sample.</div>;
   const hasSource = rows.some((row) => row.source);
   const hasText = rows.some((row) => row.text);
+  const hasCorners = rows.some((row) => row.corners);
   return (
     <div className="tableWrap">
       <table>
@@ -303,6 +304,7 @@ function DataTable({ rows }) {
             <th>Y Center</th>
             <th>Width</th>
             <th>Height</th>
+            {hasCorners && <th>Corner Coordinates</th>}
           </tr>
         </thead>
         <tbody>
@@ -315,6 +317,7 @@ function DataTable({ rows }) {
               <td>{row.y_center.toFixed(3)}</td>
               <td>{row.width.toFixed(3)}</td>
               <td>{row.height.toFixed(3)}</td>
+              {hasCorners && <td className="cornerCell">{row.corners || "-"}</td>}
             </tr>
           ))}
         </tbody>
@@ -370,6 +373,7 @@ function DetectionWorkflow() {
 
   const formattedRows = result?.detections?.map((det) => {
     const [x1, y1, x2, y2] = det.bbox;
+    const corners = det.corners?.map(([x, y]) => `(${Math.round(x)}, ${Math.round(y)})`).join(" ");
     return {
       class_name: `${det.class_name} ${(det.confidence * 100).toFixed(0)}%`,
       source: det.source || "yolo",
@@ -378,6 +382,7 @@ function DetectionWorkflow() {
       y_center: (y1 + y2) / 2,
       width: x2 - x1,
       height: y2 - y1,
+      corners,
     };
   }) || [];
 

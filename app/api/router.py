@@ -99,6 +99,16 @@ def normalize_detection_name(detection: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def bbox_corners_from_bbox(bbox: list[int]) -> list[list[int]]:
+    x1, y1, x2, y2 = [int(v) for v in bbox]
+    return [
+        [x1, y1],
+        [x2, y1],
+        [x2, y2],
+        [x1, y2],
+    ]
+
+
 def draw_detection_overlay(image: np.ndarray, detections: list[dict[str, Any]]) -> np.ndarray:
     out_img = image.copy()
     colors = {
@@ -151,6 +161,7 @@ def merge_text_detections(yolo_detections: list[dict[str, Any]], ocr_detections:
             "class_name": "Text",
             "source": "ocr",
             "text": item.get("text", ""),
+            "corners": item.get("corners") or bbox_corners_from_bbox(bbox),
         })
     return merged
 

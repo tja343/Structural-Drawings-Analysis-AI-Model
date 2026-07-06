@@ -488,6 +488,16 @@ th {
   background: rgba(8, 15, 24, 0.78);
 }
 
+.cornerCell {
+  min-width: 260px;
+  max-width: 420px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
 .apiPanel {
   margin-top: 18px;
 }
