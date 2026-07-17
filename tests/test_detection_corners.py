@@ -1,6 +1,7 @@
 import numpy as np
 
 from app.api.router import bbox_corners_from_bbox, merge_text_detections
+from app.exporters.json_engine import JSONGeneratorEngine
 from app.models.detection.inference import approximate_corners, bbox_corners, corners_from_image_region, is_structural_region
 from app.synthetic.components import SyntheticBeam, SyntheticTBeam
 
@@ -72,3 +73,29 @@ def test_ocr_detections_get_corner_fallback():
     )
 
     assert merged[0]["corners"] == bbox_corners_from_bbox([5, 6, 25, 36])
+
+
+def test_inference_output_preserves_detection_corners():
+    output = JSONGeneratorEngine().build_output(
+        "drawing.png",
+        [{
+            "class_id": 0,
+            "class_name": "shape",
+            "bbox": [10, 10, 80, 90],
+            "confidence": 0.9,
+            "corners": [
+                [10, 10],
+                [80, 10],
+                [80, 25],
+                [55, 25],
+                [55, 90],
+                [35, 90],
+                [35, 25],
+                [10, 25],
+            ],
+            "annotations": [],
+        }],
+    )
+
+    assert len(output.elements[0].corners) == 8
+    assert output.model_dump()["elements"][0]["corners"][3] == {"x": 55, "y": 25}

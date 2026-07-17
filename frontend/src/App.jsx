@@ -21,7 +21,6 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000";
 const navItems = [
   { id: "overview", label: "Overview", icon: Gauge },
   { id: "dataset", label: "Synthetic Dataset", icon: Database },
-  { id: "detect", label: "Model Detection", icon: ScanLine },
   { id: "api", label: "API Inference", icon: Network },
 ];
 
@@ -145,7 +144,6 @@ function App() {
                 setSelectedSampleId={setSelectedSampleId}
               />
             )}
-            {active === "detect" && <Detection />}
             {active === "api" && <ApiInference />}
           </>
         )}
@@ -326,116 +324,6 @@ function DataTable({ rows }) {
   );
 }
 
-function Detection() {
-  return <DetectionWorkflow />;
-}
-
-function DetectionWorkflow() {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [result, setResult] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const fileUrl = useMemo(() => {
-    if (!file) return "";
-    return URL.createObjectURL(file);
-  }, [file]);
-
-  useEffect(() => () => fileUrl && URL.revokeObjectURL(fileUrl), [fileUrl]);
-
-  function onFileChange(event) {
-    const nextFile = event.target.files?.[0];
-    setFile(nextFile || null);
-    setResult(null);
-    setMessage("");
-    setPreview(nextFile?.type?.startsWith("image/") ? URL.createObjectURL(nextFile) : null);
-  }
-
-  async function runDetection() {
-    if (!file) return;
-    setBusy(true);
-    setMessage("");
-    setResult(null);
-    const form = new FormData();
-    form.append("file", file);
-    try {
-      const res = await fetch(apiUrl("/api/v1/detect/image"), { method: "POST", body: form });
-      const payload = await res.json();
-      if (!res.ok) throw new Error(payload.detail || `HTTP ${res.status}`);
-      setResult(payload);
-    } catch (err) {
-      setMessage(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const formattedRows = result?.detections?.map((det) => {
-    const [x1, y1, x2, y2] = det.bbox;
-    const corners = det.corners?.map(([x, y]) => `(${Math.round(x)}, ${Math.round(y)})`).join(" ");
-    return {
-      class_name: `${det.class_name} ${(det.confidence * 100).toFixed(0)}%`,
-      source: det.source || "yolo",
-      text: det.text || "",
-      x_center: (x1 + x2) / 2,
-      y_center: (y1 + y2) / 2,
-      width: x2 - x1,
-      height: y2 - y1,
-      corners,
-    };
-  }) || [];
-
-  return (
-    <section className="uploadLayout">
-      <div className="uploadCard">
-        <span className="eyebrow"><ScanLine size={15} /> Detection workflow</span>
-        <h2>Model Detection</h2>
-        <p>Upload a drawing image to preview the color-isolation preprocessing and run the fast YOLO detector to draw bounding boxes and masks.</p>
-        <label className="dropZone">
-          <input type="file" accept="image/png,image/jpeg" onChange={onFileChange} />
-          <UploadCloud size={34} />
-          <strong>{file ? file.name : "Choose a drawing file"}</strong>
-          <span>image/png / image/jpeg</span>
-        </label>
-        <button className="primaryButton" onClick={runDetection} disabled={!file || busy}>
-          {busy ? <Loader2 className="spin" size={18} /> : <ScanLine size={18} />}
-          Run detection
-        </button>
-        {message && <div className="notice danger">{message}</div>}
-      </div>
-
-      <div className="previewStack">
-        {preview && !result && <img className="uploadedPreview" src={preview} alt="Uploaded drawing preview" />}
-        {result && (
-          <>
-            <div className="preprocessGrid">
-              <PreviewTile title="Original" src={result.original} />
-              <PreviewTile title="HSV mask" src={result.mask} />
-              <PreviewTile title="Cleaned" src={result.cleaned} />
-              <div className="retained">
-                <strong>{result.colored_pixel_count.toLocaleString()}</strong>
-                <span>colored pixels retained</span>
-                <em>{(result.retained_ratio * 100).toFixed(2)}%</em>
-              </div>
-            </div>
-            <div className="stageImage">
-              <img src={result.rendered} alt="YOLO detections" />
-            </div>
-            {result.summary && (
-              <div className="detectionSummary">
-                <span><strong>{result.summary.beams}</strong> beams</span>
-                <span><strong>{result.summary.text}</strong> text boxes</span>
-                <span><strong>{result.summary.ocr_text}</strong> OCR-added</span>
-              </div>
-            )}
-            <DataTable rows={formattedRows} />
-          </>
-        )}
-      </div>
-    </section>
-  );
-}
 
 function ApiInference() {
   const [mode, setMode] = useState("image");
@@ -576,15 +464,53 @@ function JsonBlock({ title, value }) {
 
 function InferenceResult({ value }) {
   const data = value?.data || value;
-  const elements = data?.elements || [];
-  const summary = data?.summary || {};
+  const isBatch = Array.isArray(data);
+  const elements = isBatch ? data.flatMap(item => item.elements || []) : data?.elements || [];
+  const summary = isBatch
+    ? data.reduce((acc, item) => ({
+        element_count: (acc.element_count || 0) + (item.summary?.element_count || item.elements?.length || 0),
+        annotation_count: (acc.annotation_count || 0) + (item.summary?.annotation_count || item.elements?.reduce((t, el) => t + (el.annotations?.length || 0), 0) || 0)
+      }), {})
+    : data?.summary || {};
+
+  function formatCorners(corners, bbox) {
+    const points = corners?.length
+      ? corners.map((point) => Array.isArray(point) ? point : [point.x, point.y])
+      : [
+          [bbox.x1 || 0, bbox.y1 || 0],
+          [bbox.x2 || 0, bbox.y1 || 0],
+          [bbox.x2 || 0, bbox.y2 || 0],
+          [bbox.x1 || 0, bbox.y2 || 0],
+        ];
+
+    return points.map(([x, y]) => `(${Math.round(x)}, ${Math.round(y)})`).join(" ");
+  }
+
+  const formattedRows = elements.map((el) => {
+    const bbox = el.bbox || {};
+    const x1 = bbox.x1 || 0;
+    const y1 = bbox.y1 || 0;
+    const x2 = bbox.x2 || 0;
+    const y2 = bbox.y2 || 0;
+    const text = el.annotations?.map(a => a.text).join(", ") || "";
+    return {
+      class_name: `${el.class_name || el.type} ${((el.detection_confidence || 0) * 100).toFixed(0)}%`,
+      source: "inference",
+      text: text,
+      x_center: (x1 + x2) / 2,
+      y_center: (y1 + y2) / 2,
+      width: x2 - x1,
+      height: y2 - y1,
+      corners: formatCorners(el.corners, bbox),
+    };
+  });
 
   return (
     <section className="inferenceResult">
       <div className="resultHeader">
         <div>
           <h3>Inference Response</h3>
-          <span>{data?.drawing_id || "uploaded drawing"}</span>
+          <span>{isBatch ? "Batch processing" : (data?.drawing_id || "uploaded drawing")}</span>
         </div>
         <div className="resultStats">
           <strong>{summary.element_count ?? elements.length}</strong>
@@ -616,6 +542,10 @@ function InferenceResult({ value }) {
             </div>
           </article>
         ))}
+      </div>
+
+      <div className="inferenceTableWrap" style={{marginTop: "1rem"}}>
+        <DataTable rows={formattedRows} />
       </div>
 
       <JsonBlock title="Raw JSON" value={value} />

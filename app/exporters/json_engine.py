@@ -5,7 +5,8 @@ from app.schemas.engineering import (
     StructuralElementSchema, 
     AnnotationSchema, 
     ParsedSemanticSchema,
-    BoundingBoxSchema
+    BoundingBoxSchema,
+    CornerPointSchema,
 )
 
 class JSONGeneratorEngine:
@@ -84,6 +85,11 @@ class JSONGeneratorEngine:
                 class_id=class_id,
                 class_name=r.get("class_name"),
                 bbox=BoundingBoxSchema(x1=r_bbox[0], y1=r_bbox[1], x2=r_bbox[2], y2=r_bbox[3]),
+                corners=[
+                    CornerPointSchema(x=int(point[0]), y=int(point[1]))
+                    for point in r.get("corners", [])
+                    if len(point) >= 2
+                ],
                 detection_confidence=r.get("confidence", 0.0),
                 annotations=annotations
             )

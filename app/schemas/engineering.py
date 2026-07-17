@@ -7,6 +7,10 @@ class BoundingBoxSchema(BaseModel):
     x2: int
     y2: int
 
+class CornerPointSchema(BaseModel):
+    x: int
+    y: int
+
 class ParsedSemanticSchema(BaseModel):
     bar_type: Optional[str] = None
     diameter: Optional[int] = None
@@ -29,6 +33,7 @@ class StructuralElementSchema(BaseModel):
     class_id: Optional[int] = None
     class_name: Optional[str] = None
     bbox: BoundingBoxSchema
+    corners: List[CornerPointSchema] = Field(default_factory=list)
     detection_confidence: float = Field(ge=0.0, le=1.0)
     annotations: List[AnnotationSchema] = Field(default_factory=list)
 
